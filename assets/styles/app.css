@@ -347,3 +347,74 @@ body {
     flex-wrap: wrap;
     align-items: center;
 }
+
+/* ══════════════════════════════════════
+   Filtres par colonne (page d'accueil)
+══════════════════════════════════════ */
+.filter-row th {
+    background-color: #eef0fd;
+    padding: 0.45rem 0.75rem;
+}
+
+.filter-input {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-family: inherit;
+    background: #fff;
+    box-sizing: border-box;
+    transition: border-color .2s;
+}
+
+.filter-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, .15);
+}
+
+.filter-range {
+    display: flex;
+    gap: 0.3rem;
+}
+
+.filter-input-half {
+    width: calc(50% - 0.15rem);
+}
+
+.filter-actions {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.btn-sm {
+    padding: 0.3rem 0.7rem;
+    font-size: 0.8rem;
+}
+
+.filter-active-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+}
+
+.filter-reset-link {
+    margin-left: auto;
+    color: #3730a3;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.82rem;
+}
+
+.filter-reset-link:hover {
+    text-decoration: underline;
+}

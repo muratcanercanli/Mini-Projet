@@ -16,28 +16,45 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-//    /**
-//     * @return Product[] Returns an array of Product objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('p.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    /**
+     * @return Product[] Returns products matching the given filters
+     */
+    public function findByFilters(array $filters): array
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->join('p.category', 'c')
+            ->orderBy('p.name', 'ASC');
 
-//    public function findOneBySomeField($value): ?Product
-//    {
-//        return $this->createQueryBuilder('p')
-//            ->andWhere('p.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if (!empty($filters['name'])) {
+            $qb->andWhere('LOWER(p.name) LIKE LOWER(:name)')
+               ->setParameter('name', '%' . $filters['name'] . '%');
+        }
+
+        if (!empty($filters['category'])) {
+            $qb->andWhere('c.id = :category')
+               ->setParameter('category', (int) $filters['category']);
+        }
+
+        if (isset($filters['priceMin']) && $filters['priceMin'] !== '') {
+            $qb->andWhere('p.price >= :priceMin')
+               ->setParameter('priceMin', (int) $filters['priceMin']);
+        }
+
+        if (isset($filters['priceMax']) && $filters['priceMax'] !== '') {
+            $qb->andWhere('p.price <= :priceMax')
+               ->setParameter('priceMax', (int) $filters['priceMax']);
+        }
+
+        if (isset($filters['stockMin']) && $filters['stockMin'] !== '') {
+            $qb->andWhere('p.stock >= :stockMin')
+               ->setParameter('stockMin', (int) $filters['stockMin']);
+        }
+
+        if (isset($filters['stockMax']) && $filters['stockMax'] !== '') {
+            $qb->andWhere('p.stock <= :stockMax')
+               ->setParameter('stockMax', (int) $filters['stockMax']);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

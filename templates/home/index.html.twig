@@ -33,14 +33,21 @@
     <main>
         <h2>Articles en vente</h2>
 
-        {% if products is empty %}
-            <p class="empty-list">Aucun article disponible pour le moment.</p>
-        {% else %}
-            <div class="stock-legend">
-                <span class="legend-item legend-low">Stock bas</span>
-                <span class="legend-item legend-out">Rupture de stock</span>
-            </div>
+        {% set hasFilters = filters.name or filters.category or filters.priceMin or filters.priceMax or filters.stockMin or filters.stockMax %}
 
+        {% if hasFilters %}
+            <div class="filter-active-info">
+                <span>Filtres actifs &mdash; <strong>{{ products|length }}</strong> résultat{% if products|length != 1 %}s{% endif %} trouvé{% if products|length != 1 %}s{% endif %}</span>
+                <a href="{{ path('app_home') }}" class="filter-reset-link">&#x2715; Effacer les filtres</a>
+            </div>
+        {% endif %}
+
+        <div class="stock-legend">
+            <span class="legend-item legend-low">Stock bas</span>
+            <span class="legend-item legend-out">Rupture de stock</span>
+        </div>
+
+        <form method="get" action="{{ path('app_home') }}" id="filter-form">
             <table class="product-table">
                 <thead>
                     <tr>
@@ -50,33 +57,76 @@
                         <th>Prix</th>
                         <th>Description</th>
                     </tr>
+                    <tr class="filter-row">
+                        <th>
+                            <input type="text" name="name" value="{{ filters.name }}" placeholder="Rechercher…" class="filter-input">
+                        </th>
+                        <th>
+                            <select name="category" class="filter-input">
+                                <option value="">Toutes catégories</option>
+                                {% for cat in categories %}
+                                    <option value="{{ cat.id }}" {% if filters.category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input type="number" name="stockMin" value="{{ filters.stockMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
+                                <input type="number" name="stockMax" value="{{ filters.stockMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
+                            </div>
+                        </th>
+                        <th>
+                            <div class="filter-range">
+                                <input type="number" name="priceMin" value="{{ filters.priceMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
+                                <input type="number" name="priceMax" value="{{ filters.priceMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
+                            </div>
+                        </th>
+                        <th>
+                            <div class="filter-actions">
+                                <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+                                <a href="{{ path('app_home') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
+                            </div>
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                    {% for product in products %}
-                        {% if product.stock == 0 %}
-                            {% set rowClass = 'stock-out' %}
-                        {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
-                            {% set rowClass = 'stock-low' %}
-                        {% else %}
-                            {% set rowClass = '' %}
-                        {% endif %}
-                        <tr class="{{ rowClass }}" onclick="window.location='{{ path('app_product_show', {id: product.id}) }}'">
-                            <td>
-                                <a class="product-name-link" href="{{ path('app_product_show', {id: product.id}) }}">
-                                    {{ product.name }}
-                                </a>
-                            </td>
-                            <td>{{ product.category.name }}</td>
-                            <td>{{ product.stock }}</td>
-                            <td>{{ product.price }} €</td>
-                            <td>
-                                {{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}…{% endif %}
+                    {% if products is empty %}
+                        <tr>
+                            <td colspan="5" class="empty-list">
+                                {% if hasFilters %}
+                                    Aucun article ne correspond aux filtres sélectionnés.
+                                {% else %}
+                                    Aucun article disponible pour le moment.
+                                {% endif %}
                             </td>
                         </tr>
-                    {% endfor %}
+                    {% else %}
+                        {% for product in products %}
+                            {% if product.stock == 0 %}
+                                {% set rowClass = 'stock-out' %}
+                            {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
+                                {% set rowClass = 'stock-low' %}
+                            {% else %}
+                                {% set rowClass = '' %}
+                            {% endif %}
+                            <tr class="{{ rowClass }}" onclick="window.location='{{ path('app_product_show', {id: product.id}) }}'">
+                                <td>
+                                    <a class="product-name-link" href="{{ path('app_product_show', {id: product.id}) }}">
+                                        {{ product.name }}
+                                    </a>
+                                </td>
+                                <td>{{ product.category.name }}</td>
+                                <td>{{ product.stock }}</td>
+                                <td>{{ product.price }} €</td>
+                                <td>
+                                    {{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}…{% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    {% endif %}
                 </tbody>
             </table>
-        {% endif %}
+        </form>
     </main>
 </div>
 {% endblock %}
