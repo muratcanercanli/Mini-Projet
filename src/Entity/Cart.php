@@ -16,16 +16,23 @@ class Cart
     #[ORM\Column]
     private ?int $id = null;
 
+    #[ORM\ManyToOne(inversedBy: 'carts')]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $buyer = null;
+
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $creationDate = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $modificationDate = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTime $purchasedAt = null;
+
     /**
      * @var Collection<int, CartItems>
      */
-    #[ORM\OneToMany(targetEntity: CartItems::class, mappedBy: 'cartId')]
+    #[ORM\OneToMany(targetEntity: CartItems::class, mappedBy: 'cart', cascade: ['remove'])]
     private Collection $cartItems;
 
     public function __construct()
@@ -36,6 +43,18 @@ class Cart
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getBuyer(): ?User
+    {
+        return $this->buyer;
+    }
+
+    public function setBuyer(?User $buyer): static
+    {
+        $this->buyer = $buyer;
+
+        return $this;
     }
 
     public function getCreationDate(): ?\DateTime
@@ -62,6 +81,33 @@ class Cart
         return $this;
     }
 
+    public function getPurchasedAt(): ?\DateTime
+    {
+        return $this->purchasedAt;
+    }
+
+    public function setPurchasedAt(?\DateTime $purchasedAt): static
+    {
+        $this->purchasedAt = $purchasedAt;
+
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->purchasedAt === null;
+    }
+
+    public function getTotal(): int
+    {
+        $total = 0;
+        foreach ($this->cartItems as $item) {
+            $total += $item->getProduct()->getPrice() * $item->getQuantity();
+        }
+
+        return $total;
+    }
+
     /**
      * @return Collection<int, CartItems>
      */
@@ -74,7 +120,7 @@ class Cart
     {
         if (!$this->cartItems->contains($cartItem)) {
             $this->cartItems->add($cartItem);
-            $cartItem->setCartId($this);
+            $cartItem->setCart($this);
         }
 
         return $this;
@@ -83,9 +129,8 @@ class Cart
     public function removeCartItem(CartItems $cartItem): static
     {
         if ($this->cartItems->removeElement($cartItem)) {
-            // set the owning side to null (unless already changed)
-            if ($cartItem->getCartId() === $this) {
-                $cartItem->setCartId(null);
+            if ($cartItem->getCart() === $this) {
+                $cartItem->setCart(null);
             }
         }
 

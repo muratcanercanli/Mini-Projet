@@ -85,6 +85,23 @@
             <dd>{{ product.modificationDate|date('d/m/Y') }}</dd>
         </dl>
 
+        {# Ajouter au panier (uniquement si en stock et connecté et pas le vendeur) #}
+        {% if app.user and product.stock > 0 and product.seller != app.user %}
+            <div class="product-actions" style="margin-bottom:1rem;">
+                <form method="post" action="{{ path('app_cart_add', {id: product.id}) }}" class="cart-add-form">
+                    <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
+                    <label for="qty-{{ product.id }}" style="font-size:.875rem;font-weight:600;color:#374151;">Quantité :</label>
+                    <input type="number" id="qty-{{ product.id }}" name="quantity" value="1" min="1" max="{{ product.stock }}" class="cart-qty-input">
+                    <button type="submit" class="btn btn-primary">Ajouter au panier</button>
+                </form>
+                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Voir le panier</a>
+            </div>
+        {% elseif app.user and product.stock == 0 %}
+            <div class="product-actions" style="margin-bottom:1rem;">
+                <span class="badge badge-stock-out" style="font-size:.9rem;padding:.4rem 1rem;">Rupture de stock</span>
+            </div>
+        {% endif %}
+
         {# Actions (propriétaire ou admin seulement) #}
         {% if app.user and (product.seller == app.user or is_granted('ROLE_ADMIN')) %}
             <div class="product-actions">
