@@ -1,27 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil{% endblock %}
+{% block title %}Accueil - Boutique{% endblock %}
 
 {% block body %}
-<div style="font-family: sans-serif; max-width: 800px; margin: 4rem auto; padding: 0 1rem; text-align: center;">
-    <h1>Bienvenue sur la boutique</h1>
-
-    {% if app.user %}
-        <p>Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
-            {% if is_granted('ROLE_ADMIN') %}
-                <span style="background:#6366f1;color:#fff;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;margin-left:.5rem;">Admin</span>
+<div class="home-container">
+    <header class="home-header">
+        <h1>Boutique en ligne</h1>
+        <nav class="home-nav">
+            {% if app.user %}
+                <span>
+                    Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <span class="badge-admin">Admin</span>
+                    {% endif %}
+                </span>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
             {% endif %}
-        </p>
-        <a href="{{ path('app_logout') }}"
-           style="display:inline-block;margin-top:1rem;padding:.6rem 1.4rem;background:#ef4444;color:#fff;border-radius:5px;text-decoration:none;font-weight:600;">
-            Se déconnecter
-        </a>
-    {% else %}
-        <p>Vous n'êtes pas connecté.</p>
-        <a href="{{ path('app_login') }}"
-           style="display:inline-block;margin-top:1rem;padding:.6rem 1.4rem;background:#6366f1;color:#fff;border-radius:5px;text-decoration:none;font-weight:600;">
-            Se connecter
-        </a>
-    {% endif %}
+        </nav>
+    </header>
+
+    <main>
+        <h2>Articles en vente</h2>
+
+        {% if products is empty %}
+            <p class="empty-list">Aucun article disponible pour le moment.</p>
+        {% else %}
+            <div class="stock-legend">
+                <span class="legend-item legend-low">Stock bas</span>
+                <span class="legend-item legend-out">Rupture de stock</span>
+            </div>
+
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Catégorie</th>
+                        <th>Stock</th>
+                        <th>Prix</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for product in products %}
+                        {% if product.stock == 0 %}
+                            {% set rowClass = 'stock-out' %}
+                        {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
+                            {% set rowClass = 'stock-low' %}
+                        {% else %}
+                            {% set rowClass = '' %}
+                        {% endif %}
+                        <tr class="{{ rowClass }}">
+                            <td><strong>{{ product.name }}</strong></td>
+                            <td>{{ product.category.name }}</td>
+                            <td>{{ product.stock }}</td>
+                            <td>{{ product.price }} €</td>
+                            <td>
+                                {{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}…{% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </main>
 </div>
 {% endblock %}

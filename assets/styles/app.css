@@ -1,3 +1,127 @@
 body {
-    background-color: skyblue;
+    background-color: #f3f4f6;
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* ── Layout ── */
+.home-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 1.5rem 1rem;
+}
+
+.home-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e5e7eb;
+}
+
+.home-header h1 {
+    margin: 0;
+    font-size: 1.75rem;
+    color: #111827;
+}
+
+.home-nav {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 0.9rem;
+}
+
+/* ── Boutons ── */
+.btn {
+    display: inline-block;
+    padding: 0.5rem 1.2rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.btn-primary { background: #6366f1; color: #fff; }
+.btn-danger  { background: #ef4444; color: #fff; }
+
+.badge-admin {
+    background: #6366f1;
+    color: #fff;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 0.4rem;
+    vertical-align: middle;
+}
+
+/* ── Légende stock ── */
+.stock-legend {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.82rem;
+}
+
+.legend-item {
+    padding: 0.2rem 0.75rem;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.legend-low { background-color: #fb923c; color: #431407; }
+.legend-out { background-color: #f87171; color: #450a0a; }
+
+/* ── Tableau produits ── */
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.product-table th,
+.product-table td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.product-table th {
+    background-color: #f9fafb;
+    font-weight: 700;
+    color: #374151;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.product-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Stock bas → fond orange */
+.product-table tr.stock-low {
+    background-color: #fed7aa;
+}
+
+/* Rupture de stock → fond rouge */
+.product-table tr.stock-out {
+    background-color: #fecaca;
+}
+
+.product-table tbody tr:hover {
+    filter: brightness(0.96);
+    cursor: default;
+}
+
+.empty-list {
+    text-align: center;
+    color: #6b7280;
+    padding: 3rem 0;
+    font-size: 1.1rem;
 }
