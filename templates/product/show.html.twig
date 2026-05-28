@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block body %}
+<div class="home-container">
+    <header class="home-header">
+        <h1>Boutique en ligne</h1>
+        <nav class="home-nav">
+            {% if app.user %}
+                <span>
+                    {{ app.user.userIdentifier }}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <span class="badge-admin">Admin</span>
+                    {% endif %}
+                </span>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            {% else %}
+                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+            {% endif %}
+        </nav>
+    </header>
+
+    {# Flash messages #}
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash-error">{{ message }}</div>
+    {% endfor %}
+
+    <a href="{{ path('app_home') }}" class="btn-back">← Retour à la liste</a>
+
+    <div class="product-show">
+
+        {# En-tête : titre + badges #}
+        <div class="product-show-header">
+            <div>
+                <h2 class="product-show-title">{{ product.name }}</h2>
+                <span class="badge badge-category">{{ product.category.name }}</span>
+            </div>
+            <div class="product-show-price-block">
+                <div class="product-price">{{ product.price }} €</div>
+
+                {% if product.stock == 0 %}
+                    <span class="badge badge-stock-out">Rupture de stock</span>
+                {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
+                    <span class="badge badge-stock-low">Stock bas ({{ product.stock }} restant{{ product.stock > 1 ? 's' : '' }})</span>
+                {% else %}
+                    <span class="badge badge-stock-ok">En stock ({{ product.stock }})</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Description #}
+        <p class="product-description">{{ product.description }}</p>
+
+        {# Métadonnées #}
+        <dl class="product-meta">
+            <dt>Vendeur</dt>
+            <dd>
+                {% if product.seller %}
+                    {{ product.seller.name }} {{ product.seller.surname }}
+                {% else %}
+                    <em>Non renseigné</em>
+                {% endif %}
+            </dd>
+
+            <dt>Contact vendeur</dt>
+            <dd>
+                {% if product.seller %}
+                    {{ product.seller.email }}
+                {% else %}
+                    —
+                {% endif %}
+            </dd>
+
+            <dt>Stock minimum (alerte)</dt>
+            <dd>{{ product.stockMin ?? '—' }}</dd>
+
+            <dt>Publié le</dt>
+            <dd>{{ product.creationDate|date('d/m/Y') }}</dd>
+
+            <dt>Dernière modification</dt>
+            <dd>{{ product.modificationDate|date('d/m/Y') }}</dd>
+        </dl>
+
+        {# Actions (propriétaire ou admin seulement) #}
+        {% if app.user and (product.seller == app.user or is_granted('ROLE_ADMIN')) %}
+            <div class="product-actions">
+                <a href="{{ path('app_product_edit', {id: product.id}) }}" class="btn btn-primary">
+                    Modifier l'annonce
+                </a>
+
+                <form method="post" action="{{ path('app_product_delete', {id: product.id}) }}"
+                      onsubmit="return confirm('Supprimer définitivement cette annonce ?')">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

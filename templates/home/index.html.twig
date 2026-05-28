@@ -14,12 +14,21 @@
                         <span class="badge-admin">Admin</span>
                     {% endif %}
                 </span>
+                <a href="{{ path('app_product_new') }}" class="btn btn-primary">+ Publier une annonce</a>
                 <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
             {% else %}
                 <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
             {% endif %}
         </nav>
     </header>
+
+    {# Flash messages #}
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash-error">{{ message }}</div>
+    {% endfor %}
 
     <main>
         <h2>Articles en vente</h2>
@@ -51,8 +60,12 @@
                         {% else %}
                             {% set rowClass = '' %}
                         {% endif %}
-                        <tr class="{{ rowClass }}">
-                            <td><strong>{{ product.name }}</strong></td>
+                        <tr class="{{ rowClass }}" onclick="window.location='{{ path('app_product_show', {id: product.id}) }}'">
+                            <td>
+                                <a class="product-name-link" href="{{ path('app_product_show', {id: product.id}) }}">
+                                    {{ product.name }}
+                                </a>
+                            </td>
                             <td>{{ product.category.name }}</td>
                             <td>{{ product.stock }}</td>
                             <td>{{ product.price }} €</td>

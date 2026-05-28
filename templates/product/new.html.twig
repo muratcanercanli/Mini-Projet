@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Publier une annonce{% endblock %}
+
+{% block body %}
+<div class="home-container">
+    <header class="home-header">
+        <h1>Boutique en ligne</h1>
+        <nav class="home-nav">
+            <a href="{{ path('app_home') }}" class="btn-secondary">← Retour à la liste</a>
+        </nav>
+    </header>
+
+    <div class="form-card">
+        <h2 class="form-card-title">Publier une annonce</h2>
+
+        {% for message in app.flashes('error') %}
+            <div class="flash-error">{{ message }}</div>
+        {% endfor %}
+
+        {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
+            {% include 'product/_form.html.twig' %}
+            <button type="submit" class="btn-submit">Publier l'annonce</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+{% endblock %}
