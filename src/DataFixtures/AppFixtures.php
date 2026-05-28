@@ -4,6 +4,7 @@ namespace App\DataFixtures;
 
 use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Review;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
@@ -217,6 +218,58 @@ class AppFixtures extends Fixture
                     ->setCategory($categories[$catIdx])
                     ->setSeller($faker->randomElement($sellers));
             $manager->persist($product);
+        }
+
+        // ── Avis vendeurs ─────────────────────────────────────────────────────
+        $reviewComments = [
+            5 => [
+                'Vendeur exemplaire, envoi rapide et véhicule conforme à la description. Je recommande vivement !',
+                'Parfait du début à la fin. Très réactif, honnête sur l\'état du véhicule. Une vraie bonne expérience.',
+                'Transaction impeccable. Le vendeur est sérieux et professionnel. Bravo !',
+            ],
+            4 => [
+                'Bon vendeur, transaction agréable. Quelques délais de réponse mais rien de rédhibitoire.',
+                'Satisfait de mon achat. Le véhicule correspond bien à l\'annonce. Petite livraison tardive.',
+                'Vendeur honnête et sympa. Je referai affaire avec lui sans hésiter.',
+            ],
+            3 => [
+                'Vendeur correct, mais communication un peu lente. Véhicule conforme à l\'annonce.',
+                'Expérience mitigée. Le vendeur est serviable mais l\'état du véhicule avait quelques défauts non mentionnés.',
+                'Moyen. La transaction s\'est déroulée sans accroc mais sans enthousiasme particulier.',
+            ],
+            2 => [
+                'Déçu. Le vendeur n\'a pas signalé tous les défauts du véhicule. À éviter.',
+                'Communication difficile et délais importants. Pas vraiment à la hauteur de mes attentes.',
+            ],
+            1 => [
+                'Très mauvaise expérience. Le véhicule ne correspondait pas du tout à l\'annonce.',
+                'Vendeur peu réactif et peu transparent. Je ne recommande pas.',
+            ],
+        ];
+
+        $usedPairs = [];
+        foreach ($sellers as $reviewer) {
+            $targets = array_filter($sellers, fn($s) => $s !== $reviewer);
+            $targets = $faker->randomElements(array_values($targets), min(3, count($targets)));
+
+            foreach ($targets as $reviewed) {
+                $key = $reviewer->getEmail() . '_' . $reviewed->getEmail();
+                if (isset($usedPairs[$key])) {
+                    continue;
+                }
+                $usedPairs[$key] = true;
+
+                $rating   = $faker->randomElement([1, 2, 3, 4, 5]);
+                $comments = $reviewComments[$rating];
+
+                $review = new Review();
+                $review->setAuthor($reviewer)
+                       ->setSeller($reviewed)
+                       ->setRating($rating)
+                       ->setComment($faker->randomElement($comments))
+                       ->setCreatedAt($faker->dateTimeBetween('-12 months', 'now'));
+                $manager->persist($review);
+            }
         }
 
         $manager->flush();

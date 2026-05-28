@@ -1,0 +1,200 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mon profil{% endblock %}
+
+{% block body %}
+<div class="home-container">
+    <header class="home-header">
+        <h1>Boutique en ligne</h1>
+        <nav class="home-nav">
+            <span>
+                {{ app.user.userIdentifier }}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <span class="badge-admin">Admin</span>
+                {% endif %}
+            </span>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
+            <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Mon panier</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+        </nav>
+    </header>
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-success">{{ message }}</div>
+    {% endfor %}
+    {% for message in app.flashes('error') %}
+        <div class="flash-error">{{ message }}</div>
+    {% endfor %}
+
+    {# ── Informations personnelles ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">Mon profil</h2>
+        <div class="profile-info-grid">
+            <div><span class="profile-label">Nom</span><span class="profile-value">{{ user.surname }} {{ user.name }}</span></div>
+            <div><span class="profile-label">Email</span><span class="profile-value">{{ user.email }}</span></div>
+            <div><span class="profile-label">Téléphone</span><span class="profile-value">{{ user.phoneNumber }}</span></div>
+            <div><span class="profile-label">Adresse</span><span class="profile-value">{{ user.address }}</span></div>
+        </div>
+    </div>
+
+    {# ── Note moyenne reçue ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">
+            Ma réputation de vendeur
+            {% if averageRating is not null %}
+                <span class="rating-badge">
+                    {{ averageRating|number_format(1, ',') }} / 5
+                    <span class="stars-display">
+                        {% for i in 1..5 %}{% if i <= averageRating|round %}★{% else %}☆{% endif %}{% endfor %}
+                    </span>
+                </span>
+            {% else %}
+                <span class="rating-badge rating-none">Aucune note reçue</span>
+            {% endif %}
+        </h2>
+
+        {% if receivedReviews is empty %}
+            <p class="profile-empty">Vous n'avez encore reçu aucun avis.</p>
+        {% else %}
+            <div class="reviews-list">
+                {% for review in receivedReviews %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div>
+                                <span class="review-author">
+                                    <a href="{{ path('app_seller_profile', {id: review.author.id}) }}">
+                                        {{ review.author.surname }} {{ review.author.name }}
+                                    </a>
+                                </span>
+                                <span class="review-date">{{ review.createdAt|date('d/m/Y') }}</span>
+                            </div>
+                            <div class="review-rating-stars">
+                                {% for i in 1..5 %}
+                                    {% if i <= review.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                <span class="review-rating-num">({{ review.rating }}/5)</span>
+                            </div>
+                        </div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                        <div class="review-actions">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <form method="post" action="{{ path('app_review_delete', {id: review.id}) }}"
+                                      onsubmit="return confirm('Supprimer cet avis ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('review_delete_' ~ review.id) }}">
+                                    <button type="submit" class="btn-review-delete">Supprimer (admin)</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Avis donnés ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">Vendeurs que j'ai évalués</h2>
+
+        {% if givenReviews is empty %}
+            <p class="profile-empty">Vous n'avez encore évalué aucun vendeur.</p>
+        {% else %}
+            <div class="reviews-list">
+                {% for review in givenReviews %}
+                    <div class="review-item">
+                        <div class="review-header">
+                            <div>
+                                <span class="review-author">
+                                    <a href="{{ path('app_seller_profile', {id: review.seller.id}) }}">
+                                        {{ review.seller.surname }} {{ review.seller.name }}
+                                    </a>
+                                </span>
+                                <span class="review-date">{{ review.createdAt|date('d/m/Y') }}</span>
+                            </div>
+                            <div class="review-rating-stars">
+                                {% for i in 1..5 %}
+                                    {% if i <= review.rating %}★{% else %}☆{% endif %}
+                                {% endfor %}
+                                <span class="review-rating-num">({{ review.rating }}/5)</span>
+                            </div>
+                        </div>
+                        <p class="review-comment">{{ review.comment }}</p>
+                        <div class="review-actions">
+                            <form method="post" action="{{ path('app_review_delete', {id: review.id}) }}"
+                                  onsubmit="return confirm('Supprimer votre avis ?')">
+                                <input type="hidden" name="_token" value="{{ csrf_token('review_delete_' ~ review.id) }}">
+                                <button type="submit" class="btn-review-delete">Supprimer mon avis</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    {# ── Articles favoris ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">Mes articles favoris</h2>
+
+        {% if user.listFavorites is empty %}
+            <p class="profile-empty">Vous n'avez aucun article en favori.</p>
+        {% else %}
+            <ul class="profile-list">
+                {% for product in user.listFavorites %}
+                    <li>
+                        <a href="{{ path('app_product_show', {id: product.id}) }}">{{ product.name }}</a>
+                        <span class="profile-list-meta">{{ product.price }} € — {{ product.category.name }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+
+    {# ── Commandes passées ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">Mes commandes passées</h2>
+
+        {% set pastOrders = user.carts|filter(c => c.purchasedAt is not null) %}
+
+        {% if pastOrders is empty %}
+            <p class="profile-empty">Vous n'avez passé aucune commande.</p>
+        {% else %}
+            {% for cart in pastOrders %}
+                <div class="order-block">
+                    <div class="order-header">
+                        <span class="order-date">Commande du {{ cart.purchasedAt|date('d/m/Y à H:i') }}</span>
+                        <span class="order-total">
+                            Total :
+                            {% set total = 0 %}
+                            {% for item in cart.cartItems %}{% set total = total + item.quantity * item.product.price %}{% endfor %}
+                            {{ total }} €
+                        </span>
+                    </div>
+                    <ul class="order-items">
+                        {% for item in cart.cartItems %}
+                            <li>{{ item.product.name }} × {{ item.quantity }} — {{ item.quantity * item.product.price }} €</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    {# ── Mes annonces ── #}
+    <div class="profile-card">
+        <h2 class="profile-section-title">Mes annonces publiées</h2>
+
+        {% if user.products is empty %}
+            <p class="profile-empty">Vous n'avez publié aucune annonce.</p>
+        {% else %}
+            <ul class="profile-list">
+                {% for product in user.products %}
+                    <li>
+                        <a href="{{ path('app_product_show', {id: product.id}) }}">{{ product.name }}</a>
+                        <span class="profile-list-meta">{{ product.price }} € — stock : {{ product.stock }}</span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

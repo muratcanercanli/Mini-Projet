@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use App\Entity\Review;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
@@ -57,11 +58,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Cart::class, mappedBy: 'buyer')]
     private Collection $carts;
 
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'author', orphanRemoval: true)]
+    private Collection $givenReviews;
+
+    /**
+     * @var Collection<int, Review>
+     */
+    #[ORM\OneToMany(targetEntity: Review::class, mappedBy: 'seller', orphanRemoval: true)]
+    private Collection $receivedReviews;
+
     public function __construct()
     {
         $this->listFavorites = new ArrayCollection();
         $this->products = new ArrayCollection();
         $this->carts = new ArrayCollection();
+        $this->givenReviews = new ArrayCollection();
+        $this->receivedReviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -224,5 +239,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getCarts(): Collection
     {
         return $this->carts;
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getGivenReviews(): Collection
+    {
+        return $this->givenReviews;
+    }
+
+    /**
+     * @return Collection<int, Review>
+     */
+    public function getReceivedReviews(): Collection
+    {
+        return $this->receivedReviews;
     }
 }
