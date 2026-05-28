@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+<div style="font-family: sans-serif; max-width: 800px; margin: 4rem auto; padding: 0 1rem; text-align: center;">
+    <h1>Bienvenue sur la boutique</h1>
+
+    {% if app.user %}
+        <p>Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
+            {% if is_granted('ROLE_ADMIN') %}
+                <span style="background:#6366f1;color:#fff;padding:.2rem .6rem;border-radius:4px;font-size:.8rem;margin-left:.5rem;">Admin</span>
+            {% endif %}
+        </p>
+        <a href="{{ path('app_logout') }}"
+           style="display:inline-block;margin-top:1rem;padding:.6rem 1.4rem;background:#ef4444;color:#fff;border-radius:5px;text-decoration:none;font-weight:600;">
+            Se déconnecter
+        </a>
+    {% else %}
+        <p>Vous n'êtes pas connecté.</p>
+        <a href="{{ path('app_login') }}"
+           style="display:inline-block;margin-top:1rem;padding:.6rem 1.4rem;background:#6366f1;color:#fff;border-radius:5px;text-decoration:none;font-weight:600;">
+            Se connecter
+        </a>
+    {% endif %}
+</div>
+{% endblock %}
