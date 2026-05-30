@@ -19,6 +19,8 @@
         </nav>
     </header>
 
+    <div class="home-main">
+
     {% for message in app.flashes('success') %}
         <div class="flash-success">{{ message }}</div>
     {% endfor %}
@@ -140,9 +142,16 @@
         {% else %}
             <ul class="profile-list">
                 {% for product in user.listFavorites %}
-                    <li>
-                        <a href="{{ path('app_product_show', {id: product.id}) }}">{{ product.name }}</a>
-                        <span class="profile-list-meta">{{ product.price }} € — {{ product.category.name }}</span>
+                    <li class="profile-list-item">
+                        <div>
+                            <a href="{{ path('app_product_show', {id: product.id}) }}">{{ product.name }}</a>
+                            <span class="profile-list-meta">{{ product.price }} € — {{ product.category.name }}</span>
+                        </div>
+                        <form method="post" action="{{ path('app_favorite_toggle', {id: product.id}) }}" style="display:inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('favorite_toggle_' ~ product.id) }}">
+                            <input type="hidden" name="redirect" value="profile">
+                            <button type="submit" class="btn-favorite-remove" title="Retirer des favoris">♥ Retirer</button>
+                        </form>
                     </li>
                 {% endfor %}
             </ul>
@@ -196,5 +205,6 @@
             </ul>
         {% endif %}
     </div>
+    </div>{# /home-main #}
 </div>
 {% endblock %}

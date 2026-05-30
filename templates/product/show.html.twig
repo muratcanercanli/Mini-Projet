@@ -23,6 +23,8 @@
     </header>
 
     {# Flash messages #}
+    <div class="home-main">
+
     {% for message in app.flashes('success') %}
         <div class="flash-success">{{ message }}</div>
     {% endfor %}
@@ -105,6 +107,20 @@
             </div>
         {% endif %}
 
+        {# Ajouter / retirer des favoris (tout utilisateur connecté, sauf le vendeur) #}
+        {% if app.user and product.seller != app.user %}
+            {% set isFavorite = app.user.listFavorites.contains(product) %}
+            <div class="product-actions" style="margin-bottom:1rem;">
+                <form method="post" action="{{ path('app_favorite_toggle', {id: product.id}) }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('favorite_toggle_' ~ product.id) }}">
+                    <input type="hidden" name="redirect" value="product">
+                    <button type="submit" class="btn-favorite {% if isFavorite %}btn-favorite--active{% endif %}">
+                        {% if isFavorite %}♥ Retirer des favoris{% else %}♡ Ajouter aux favoris{% endif %}
+                    </button>
+                </form>
+            </div>
+        {% endif %}
+
         {# Actions (propriétaire ou admin seulement) #}
         {% if app.user and (product.seller == app.user or is_granted('ROLE_ADMIN')) %}
             <div class="product-actions">
@@ -121,5 +137,6 @@
         {% endif %}
 
     </div>
+    </div>{# /home-main #}
 </div>
 {% endblock %}

@@ -23,6 +23,8 @@
         </nav>
     </header>
 
+    <div class="home-main">
+
     {% for message in app.flashes('success') %}
         <div class="flash-success">{{ message }}</div>
     {% endfor %}
@@ -152,5 +154,6 @@
             </div>
         {% endif %}
     </div>
+    </div>{# /home-main #}
 </div>
 {% endblock %}

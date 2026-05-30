@@ -13,6 +13,8 @@
         </nav>
     </header>
 
+    <main class="home-main">
+
     {# Flash messages #}
     {% for message in app.flashes('success') %}
         <div class="flash-success">{{ message }}</div>
@@ -20,8 +22,6 @@
     {% for message in app.flashes('error') %}
         <div class="flash-error">{{ message }}</div>
     {% endfor %}
-
-    <main>
         <h2>Mon panier</h2>
 
         {% if cart is null or cart.cartItems is empty %}
