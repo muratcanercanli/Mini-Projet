@@ -1,19 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Modifier — {{ product.name }}{% endblock %}
+{% block title %}{{ 'product.edit.heading'|trans }} — {{ product.name }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
     <header class="home-header">
         <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
-            <a href="{{ path('app_product_show', {id: product.id}) }}" class="btn-secondary">← Retour à l'annonce</a>
+            <a href="{{ path('app_product_show', {id: product.id}) }}" class="btn-secondary">{{ 'product.edit.back'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
     <div class="home-main">
     <div class="form-card">
-        <h2 class="form-card-title">Modifier l'annonce</h2>
+        <h2 class="form-card-title">{{ 'product.edit.heading'|trans }}</h2>
         <p class="form-card-subtitle">{{ product.name }}</p>
 
         {% for message in app.flashes('error') %}
@@ -22,9 +23,9 @@
 
         {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
             {% include 'product/_form.html.twig' %}
-            <button type="submit" class="btn-submit">Enregistrer les modifications</button>
+            <button type="submit" class="btn-submit">{{ 'product.edit.submit'|trans }}</button>
         {{ form_end(form) }}
     </div>
-    </div>{# /home-main #}
+    </div>
 </div>
 {% endblock %}

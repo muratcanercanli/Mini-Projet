@@ -5,12 +5,13 @@
 {% block body %}
 <div class="home-container">
     <header class="home-header">
-        <h1 class="navbar-admin-title">{{ include('_brand.html.twig') }}<span class="navbar-section">› Administration</span></h1>
+        <h1 class="navbar-admin-title">{{ include('_brand.html.twig') }}<span class="navbar-section">{{ 'admin.section_label'|trans }}</span></h1>
         <nav class="home-nav">
-            <span class="badge-admin">Admin</span>
-            <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">← Tous les utilisateurs</a>
-            <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
-            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
+            <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">{{ 'admin_detail.back'|trans }}</a>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">{{ 'nav.home'|trans }}</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
@@ -29,16 +30,16 @@
                 <h2 class="profile-section-title">
                     {{ targetUser.surname }} {{ targetUser.name }}
                     {% if 'ROLE_ADMIN' in targetUser.roles %}
-                        <span class="badge-admin">Admin</span>
+                        <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                     {% else %}
-                        <span class="badge-user">Membre</span>
+                        <span class="badge-user">{{ 'admin.role_member'|trans }}</span>
                     {% endif %}
                 </h2>
                 {% if targetUser != app.user %}
                     <form method="post" action="{{ path('app_admin_user_delete', {id: targetUser.id}) }}"
-                          onsubmit="return confirm('Supprimer {{ targetUser.surname }} {{ targetUser.name }} ? Ses produits et avis seront aussi supprimés.')">
+                          onsubmit="return confirm('{{ 'admin_detail.confirm_delete_user'|trans({'%name%': targetUser.surname ~ ' ' ~ targetUser.name}) }}')">
                         <input type="hidden" name="_token" value="{{ csrf_token('admin_user_delete_' ~ targetUser.id) }}">
-                        <button type="submit" class="btn btn-danger btn-sm">Supprimer l'utilisateur</button>
+                        <button type="submit" class="btn btn-danger btn-sm">{{ 'admin_detail.delete_user'|trans }}</button>
                     </form>
                 {% endif %}
             </div>
@@ -47,57 +48,57 @@
                 <input type="hidden" name="_token" value="{{ csrf_token('admin_user_edit_' ~ targetUser.id) }}">
                 <div class="form-row-2">
                     <div class="form-group">
-                        <label>Prénom</label>
+                        <label>{{ 'admin_detail.field_firstname'|trans }}</label>
                         <input type="text" name="surname" value="{{ targetUser.surname }}" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Nom</label>
+                        <label>{{ 'admin_detail.field_lastname'|trans }}</label>
                         <input type="text" name="name" value="{{ targetUser.name }}" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Email</label>
+                        <label>{{ 'admin_detail.field_email'|trans }}</label>
                         <input type="email" name="email" value="{{ targetUser.email }}" class="form-control" required>
                     </div>
                     <div class="form-group">
-                        <label>Téléphone</label>
+                        <label>{{ 'admin_detail.field_phone'|trans }}</label>
                         <input type="text" name="phoneNumber" value="{{ targetUser.phoneNumber }}" class="form-control">
                     </div>
                     <div class="form-group" style="grid-column: 1 / -1;">
-                        <label>Adresse</label>
+                        <label>{{ 'admin_detail.field_address'|trans }}</label>
                         <input type="text" name="address" value="{{ targetUser.address }}" class="form-control">
                     </div>
                     <div class="form-group">
                         <label class="admin-checkbox-label">
                             <input type="checkbox" name="is_admin" value="1"
                                    {% if 'ROLE_ADMIN' in targetUser.roles %}checked{% endif %}
-                                   {% if targetUser == app.user %}disabled title="Vous ne pouvez pas modifier votre propre rôle"{% endif %}>
-                            Rôle administrateur
+                                   {% if targetUser == app.user %}disabled title="{{ 'admin_detail.cannot_modify_own_role'|trans }}"{% endif %}>
+                            {{ 'admin_detail.role_admin_label'|trans }}
                         </label>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                <button type="submit" class="btn btn-primary">{{ 'admin_detail.save'|trans }}</button>
             </form>
         </div>
 
         {# ── Produits ── #}
         <div class="profile-card">
             <h2 class="profile-section-title">
-                Produits publiés
+                {{ 'admin_detail.products_title'|trans }}
                 <span class="admin-count">{{ targetUser.products|length }}</span>
             </h2>
 
             {% if targetUser.products is empty %}
-                <p class="profile-empty">Aucun produit publié.</p>
+                <p class="profile-empty">{{ 'admin_detail.no_products'|trans }}</p>
             {% else %}
                 <table class="product-table admin-table">
                     <thead>
                         <tr>
-                            <th>Nom</th>
-                            <th>Catégorie</th>
-                            <th>Prix</th>
-                            <th>Stock</th>
-                            <th>Publié le</th>
-                            <th>Actions</th>
+                            <th>{{ 'admin_detail.col_name'|trans }}</th>
+                            <th>{{ 'admin_detail.col_category'|trans }}</th>
+                            <th>{{ 'admin_detail.col_price'|trans }}</th>
+                            <th>{{ 'admin_detail.col_stock'|trans }}</th>
+                            <th>{{ 'admin_detail.col_published'|trans }}</th>
+                            <th>{{ 'admin_detail.col_actions'|trans }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,13 +120,13 @@
                                         <span class="badge badge-stock-ok">{{ product.stock }}</span>
                                     {% endif %}
                                 </td>
-                                <td style="color:#6b7280; font-size:.85rem;">{{ product.creationDate|date('d/m/Y') }}</td>
+                                <td style="color:var(--text-3); font-size:.85rem;">{{ product.creationDate|date('d/m/Y') }}</td>
                                 <td class="admin-actions-cell">
-                                    <a href="{{ path('app_product_edit', {id: product.id}) }}" class="btn btn-secondary btn-sm">Modifier</a>
+                                    <a href="{{ path('app_product_edit', {id: product.id}) }}" class="btn btn-secondary btn-sm">{{ 'admin_detail.btn_edit'|trans }}</a>
                                     <form method="post" action="{{ path('app_admin_product_delete', {id: product.id}) }}"
-                                          onsubmit="return confirm('Supprimer « {{ product.name }} » ?')">
+                                          onsubmit="return confirm('{{ 'product.confirm_delete'|trans }}')">
                                         <input type="hidden" name="_token" value="{{ csrf_token('admin_product_delete_' ~ product.id) }}">
-                                        <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">{{ 'admin_detail.btn_delete'|trans }}</button>
                                     </form>
                                 </td>
                             </tr>
@@ -138,7 +139,7 @@
         {# ── Avis reçus ── #}
         <div class="profile-card">
             <h2 class="profile-section-title">
-                Avis reçus
+                {{ 'admin_detail.reviews_received_title'|trans }}
                 <span class="admin-count">{{ targetUser.receivedReviews|length }}</span>
                 {% if averageRating is not null %}
                     <span class="rating-badge">
@@ -151,7 +152,7 @@
             </h2>
 
             {% if targetUser.receivedReviews is empty %}
-                <p class="profile-empty">Aucun avis reçu.</p>
+                <p class="profile-empty">{{ 'admin_detail.no_reviews_received'|trans }}</p>
             {% else %}
                 <div class="reviews-list">
                     {% for review in targetUser.receivedReviews %}
@@ -159,7 +160,7 @@
                             <div class="review-header">
                                 <div>
                                     <span class="review-author">
-                                        De :
+                                        {{ 'admin_detail.from_label'|trans }}
                                         <a href="{{ path('app_admin_user_detail', {id: review.author.id}) }}">
                                             {{ review.author.surname }} {{ review.author.name }}
                                         </a>
@@ -174,10 +175,10 @@
                             <p class="review-comment">{{ review.comment }}</p>
                             <div class="review-actions">
                                 <form method="post" action="{{ path('app_admin_review_delete', {id: review.id}) }}"
-                                      onsubmit="return confirm('Supprimer cet avis ?')">
+                                      onsubmit="return confirm('{{ 'admin_detail.confirm_delete_review'|trans }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('admin_review_delete_' ~ review.id) }}">
                                     <input type="hidden" name="redirect_user_id" value="{{ targetUser.id }}">
-                                    <button type="submit" class="btn-review-delete">Supprimer</button>
+                                    <button type="submit" class="btn-review-delete">{{ 'admin_detail.btn_delete_review'|trans }}</button>
                                 </form>
                             </div>
                         </div>
@@ -189,12 +190,12 @@
         {# ── Avis donnés ── #}
         <div class="profile-card">
             <h2 class="profile-section-title">
-                Avis donnés
+                {{ 'admin_detail.reviews_given_title'|trans }}
                 <span class="admin-count">{{ targetUser.givenReviews|length }}</span>
             </h2>
 
             {% if targetUser.givenReviews is empty %}
-                <p class="profile-empty">Aucun avis donné.</p>
+                <p class="profile-empty">{{ 'admin_detail.no_reviews_given'|trans }}</p>
             {% else %}
                 <div class="reviews-list">
                     {% for review in targetUser.givenReviews %}
@@ -202,7 +203,7 @@
                             <div class="review-header">
                                 <div>
                                     <span class="review-author">
-                                        Pour :
+                                        {{ 'admin_detail.for_label'|trans }}
                                         <a href="{{ path('app_admin_user_detail', {id: review.seller.id}) }}">
                                             {{ review.seller.surname }} {{ review.seller.name }}
                                         </a>
@@ -217,10 +218,10 @@
                             <p class="review-comment">{{ review.comment }}</p>
                             <div class="review-actions">
                                 <form method="post" action="{{ path('app_admin_review_delete', {id: review.id}) }}"
-                                      onsubmit="return confirm('Supprimer cet avis ?')">
+                                      onsubmit="return confirm('{{ 'admin_detail.confirm_delete_review'|trans }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('admin_review_delete_' ~ review.id) }}">
                                     <input type="hidden" name="redirect_user_id" value="{{ targetUser.id }}">
-                                    <button type="submit" class="btn-review-delete">Supprimer</button>
+                                    <button type="submit" class="btn-review-delete">{{ 'admin_detail.btn_delete_review'|trans }}</button>
                                 </form>
                             </div>
                         </div>

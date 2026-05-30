@@ -1,10 +1,22 @@
 import './bootstrap.js';
-/*
- * Welcome to your app's main JavaScript file!
- *
- * This file will be included onto the page via the importmap() Twig function,
- * which should already be in your base.html.twig.
- */
 import './styles/app.css';
 
-console.log('This log comes from assets/app.js - welcome to AssetMapper! 🎉');
+function handleToggle() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+}
+
+function initThemeToggle() {
+    const toggle = document.getElementById('theme-toggle');
+    if (!toggle) return;
+    // Retire le listener précédent avant d'en ajouter un nouveau (Turbo recharge le DOM)
+    toggle.removeEventListener('click', handleToggle);
+    toggle.addEventListener('click', handleToggle);
+}
+
+// Chargement initial
+document.addEventListener('DOMContentLoaded', initThemeToggle);
+// Navigation Turbo (changement de langue, etc.)
+document.addEventListener('turbo:load', initThemeToggle);

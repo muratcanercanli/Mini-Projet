@@ -11,18 +11,18 @@
                 <span>
                     {{ app.user.userIdentifier }}
                     {% if is_granted('ROLE_ADMIN') %}
-                        <span class="badge-admin">Admin</span>
+                        <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                     {% endif %}
                 </span>
-                <a href="{{ path('app_profile') }}" class="btn btn-secondary">Mon profil</a>
-                <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+                <a href="{{ path('app_profile') }}" class="btn btn-secondary">{{ 'nav.my_profile'|trans }}</a>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
             {% else %}
-                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                <a href="{{ path('app_login') }}" class="btn btn-primary">{{ 'nav.login'|trans }}</a>
             {% endif %}
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
-    {# Flash messages #}
     <div class="home-main">
 
     {% for message in app.flashes('success') %}
@@ -32,11 +32,10 @@
         <div class="flash-error">{{ message }}</div>
     {% endfor %}
 
-    <a href="{{ path('app_home') }}" class="btn-back">← Retour à la liste</a>
+    <a href="{{ path('app_home') }}" class="btn-back">{{ 'product.back_to_list'|trans }}</a>
 
     <div class="product-show">
 
-        {# En-tête : titre + badges #}
         <div class="product-show-header">
             <div>
                 <h2 class="product-show-title">{{ product.name }}</h2>
@@ -46,32 +45,30 @@
                 <div class="product-price">{{ product.price }} €</div>
 
                 {% if product.stock == 0 %}
-                    <span class="badge badge-stock-out">Rupture de stock</span>
+                    <span class="badge badge-stock-out">{{ 'product.out_of_stock'|trans }}</span>
                 {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
-                    <span class="badge badge-stock-low">Stock bas ({{ product.stock }} restant{{ product.stock > 1 ? 's' : '' }})</span>
+                    <span class="badge badge-stock-low">{{ 'product.low_stock'|trans }} ({{ product.stock }} {{ product.stock > 1 ? 'product.remaining_plural'|trans : 'product.remaining_singular'|trans }})</span>
                 {% else %}
-                    <span class="badge badge-stock-ok">En stock ({{ product.stock }})</span>
+                    <span class="badge badge-stock-ok">{{ 'product.in_stock'|trans({'%count%': product.stock}) }}</span>
                 {% endif %}
             </div>
         </div>
 
-        {# Description #}
         <p class="product-description">{{ product.description }}</p>
 
-        {# Métadonnées #}
         <dl class="product-meta">
-            <dt>Vendeur</dt>
+            <dt>{{ 'product.meta_seller'|trans }}</dt>
             <dd>
                 {% if product.seller %}
                     <a href="{{ path('app_seller_profile', {id: product.seller.id}) }}" style="color:#6366f1;font-weight:600;text-decoration:none;">
                         {{ product.seller.name }} {{ product.seller.surname }}
                     </a>
                 {% else %}
-                    <em>Non renseigné</em>
+                    <em>{{ 'product.meta_not_provided'|trans }}</em>
                 {% endif %}
             </dd>
 
-            <dt>Contact vendeur</dt>
+            <dt>{{ 'product.meta_seller_contact'|trans }}</dt>
             <dd>
                 {% if product.seller %}
                     {{ product.seller.email }}
@@ -80,34 +77,32 @@
                 {% endif %}
             </dd>
 
-            <dt>Stock minimum (alerte)</dt>
+            <dt>{{ 'product.meta_stock_min'|trans }}</dt>
             <dd>{{ product.stockMin ?? '—' }}</dd>
 
-            <dt>Publié le</dt>
+            <dt>{{ 'product.meta_published_on'|trans }}</dt>
             <dd>{{ product.creationDate|date('d/m/Y') }}</dd>
 
-            <dt>Dernière modification</dt>
+            <dt>{{ 'product.meta_last_modified'|trans }}</dt>
             <dd>{{ product.modificationDate|date('d/m/Y') }}</dd>
         </dl>
 
-        {# Ajouter au panier (uniquement si en stock et connecté et pas le vendeur) #}
         {% if app.user and product.stock > 0 and product.seller != app.user %}
             <div class="product-actions" style="margin-bottom:1rem;">
                 <form method="post" action="{{ path('app_cart_add', {id: product.id}) }}" class="cart-add-form">
                     <input type="hidden" name="_token" value="{{ csrf_token('cart_add_' ~ product.id) }}">
-                    <label for="qty-{{ product.id }}" style="font-size:.875rem;font-weight:600;color:#374151;">Quantité :</label>
+                    <label for="qty-{{ product.id }}" style="font-size:.875rem;font-weight:600;color:var(--text-2);">{{ 'product.quantity_label'|trans }}</label>
                     <input type="number" id="qty-{{ product.id }}" name="quantity" value="1" min="1" max="{{ product.stock }}" class="cart-qty-input">
-                    <button type="submit" class="btn btn-primary">Ajouter au panier</button>
+                    <button type="submit" class="btn btn-primary">{{ 'product.add_to_cart'|trans }}</button>
                 </form>
-                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Voir le panier</a>
+                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">{{ 'product.view_cart'|trans }}</a>
             </div>
         {% elseif app.user and product.stock == 0 %}
             <div class="product-actions" style="margin-bottom:1rem;">
-                <span class="badge badge-stock-out" style="font-size:.9rem;padding:.4rem 1rem;">Rupture de stock</span>
+                <span class="badge badge-stock-out" style="font-size:.9rem;padding:.4rem 1rem;">{{ 'product.out_of_stock'|trans }}</span>
             </div>
         {% endif %}
 
-        {# Ajouter / retirer des favoris (tout utilisateur connecté, sauf le vendeur) #}
         {% if app.user and product.seller != app.user %}
             {% set isFavorite = app.user.listFavorites.contains(product) %}
             <div class="product-actions" style="margin-bottom:1rem;">
@@ -115,28 +110,27 @@
                     <input type="hidden" name="_token" value="{{ csrf_token('favorite_toggle_' ~ product.id) }}">
                     <input type="hidden" name="redirect" value="product">
                     <button type="submit" class="btn-favorite {% if isFavorite %}btn-favorite--active{% endif %}">
-                        {% if isFavorite %}♥ Retirer des favoris{% else %}♡ Ajouter aux favoris{% endif %}
+                        {% if isFavorite %}{{ 'product.remove_favorite'|trans }}{% else %}{{ 'product.add_favorite'|trans }}{% endif %}
                     </button>
                 </form>
             </div>
         {% endif %}
 
-        {# Actions (propriétaire ou admin seulement) #}
         {% if app.user and (product.seller == app.user or is_granted('ROLE_ADMIN')) %}
             <div class="product-actions">
                 <a href="{{ path('app_product_edit', {id: product.id}) }}" class="btn btn-primary">
-                    Modifier l'annonce
+                    {{ 'product.edit'|trans }}
                 </a>
 
                 <form method="post" action="{{ path('app_product_delete', {id: product.id}) }}"
-                      onsubmit="return confirm('Supprimer définitivement cette annonce ?')">
+                      onsubmit="return confirm('{{ 'product.confirm_delete'|trans }}')">
                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ product.id) }}">
-                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                    <button type="submit" class="btn btn-danger">{{ 'product.delete'|trans }}</button>
                 </form>
             </div>
         {% endif %}
 
     </div>
-    </div>{# /home-main #}
+    </div>
 </div>
 {% endblock %}

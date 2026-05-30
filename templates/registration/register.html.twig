@@ -1,12 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Créer un compte{% endblock %}
+{% block title %}{{ 'register.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="register-wrapper">
     <div class="register-card">
         {{ include('_brand.html.twig', {brand_class: 'card-brand'}) }}
-        <h1>Créer un compte</h1>
+
+        <div style="display:flex; justify-content:flex-end; gap:.5rem; margin-bottom:1rem;">
+            {{ include('_controls.html.twig') }}
+        </div>
+
+        <h1>{{ 'register.heading'|trans }}</h1>
 
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
@@ -62,140 +67,13 @@
                 {{ form_errors(form.plainPassword) }}
             </div>
 
-            <button type="submit" class="btn-submit">Créer mon compte</button>
+            <button type="submit" class="btn-submit">{{ 'register.submit'|trans }}</button>
 
         {{ form_end(form) }}
 
         <p class="login-link">
-            Déjà inscrit ? <a href="{{ path('app_login') }}">Se connecter</a>
+            {{ 'register.already_registered'|trans }} <a href="{{ path('app_login') }}">{{ 'register.login_link'|trans }}</a>
         </p>
     </div>
 </div>
-
-<style>
-    body {
-        margin: 0;
-        font-family: sans-serif;
-        background: #f0f2f5;
-    }
-
-    .register-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 2rem 1rem;
-    }
-
-    .register-card {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 16px rgba(0,0,0,.10);
-        padding: 2.5rem 2rem;
-        width: 100%;
-        max-width: 520px;
-    }
-
-    h1 {
-        margin: 0 0 1.5rem;
-        font-size: 1.6rem;
-        text-align: center;
-        color: #1a1a2e;
-    }
-
-    .alert {
-        border-radius: 4px;
-        padding: .75rem 1rem;
-        margin-bottom: 1rem;
-        font-size: .9rem;
-    }
-
-    .alert-success {
-        background: #d1fae5;
-        color: #065f46;
-        border: 1px solid #a7f3d0;
-    }
-
-    .alert-error {
-        background: #fde8e8;
-        color: #c0392b;
-        border: 1px solid #f5c6c6;
-    }
-
-    .form-row {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 0 1rem;
-    }
-
-    .form-group {
-        margin-bottom: 1.1rem;
-        display: flex;
-        flex-direction: column;
-    }
-
-    .form-group label {
-        font-size: .875rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: .35rem;
-    }
-
-    .form-group input {
-        padding: .6rem .75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 5px;
-        font-size: 1rem;
-        transition: border-color .2s;
-    }
-
-    .form-group input:focus {
-        outline: none;
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.15);
-    }
-
-    .form-group ul {
-        margin: .3rem 0 0;
-        padding: 0;
-        list-style: none;
-        color: #c0392b;
-        font-size: .8rem;
-    }
-
-    .btn-submit {
-        width: 100%;
-        padding: .7rem;
-        background: #6366f1;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background .2s;
-        margin-top: .5rem;
-    }
-
-    .btn-submit:hover {
-        background: #4f46e5;
-    }
-
-    .login-link {
-        text-align: center;
-        margin-top: 1.25rem;
-        font-size: .875rem;
-        color: #6b7280;
-    }
-
-    .login-link a {
-        color: #6366f1;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .login-link a:hover {
-        text-decoration: underline;
-    }
-</style>
 {% endblock %}

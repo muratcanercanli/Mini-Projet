@@ -1,16 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Administration — Utilisateurs{% endblock %}
+{% block title %}{{ 'admin.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
     <header class="home-header">
-        <h1 class="navbar-admin-title">{{ include('_brand.html.twig') }}<span class="navbar-section">› Administration</span></h1>
+        <h1 class="navbar-admin-title">{{ include('_brand.html.twig') }}<span class="navbar-section">{{ 'admin.section_label'|trans }}</span></h1>
         <nav class="home-nav">
-            <span class="badge-admin">Admin</span>
-            <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
-            <a href="{{ path('app_profile') }}" class="btn btn-secondary">Mon profil</a>
-            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">{{ 'nav.home'|trans }}</a>
+            <a href="{{ path('app_profile') }}" class="btn btn-secondary">{{ 'nav.my_profile'|trans }}</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
@@ -24,20 +25,20 @@
         {% endfor %}
 
         <div class="admin-section-header">
-            <h2>Gestion des utilisateurs</h2>
-            <span class="admin-count">{{ usersData|length }} utilisateur{% if usersData|length != 1 %}s{% endif %}</span>
+            <h2>{{ 'admin.users_management'|trans }}</h2>
+            <span class="admin-count">{{ usersData|length }} {{ usersData|length != 1 ? 'admin.user_plural'|trans : 'admin.user_singular'|trans }}</span>
         </div>
 
         <table class="product-table admin-table">
             <thead>
                 <tr>
-                    <th>Utilisateur</th>
-                    <th>Email</th>
-                    <th>Rôle</th>
-                    <th>Produits</th>
-                    <th>Avis reçus</th>
-                    <th>Note moy.</th>
-                    <th>Actions</th>
+                    <th>{{ 'admin.col_user'|trans }}</th>
+                    <th>{{ 'admin.col_email'|trans }}</th>
+                    <th>{{ 'admin.col_role'|trans }}</th>
+                    <th>{{ 'admin.col_products'|trans }}</th>
+                    <th>{{ 'admin.col_reviews_received'|trans }}</th>
+                    <th>{{ 'admin.col_avg_rating'|trans }}</th>
+                    <th>{{ 'admin.col_actions'|trans }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -49,12 +50,12 @@
                                 {{ user.surname }} {{ user.name }}
                             </a>
                         </td>
-                        <td style="color:#6b7280; font-size:.9rem;">{{ user.email }}</td>
+                        <td style="color:var(--text-3); font-size:.9rem;">{{ user.email }}</td>
                         <td>
                             {% if 'ROLE_ADMIN' in user.roles %}
-                                <span class="badge-admin">Admin</span>
+                                <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                             {% else %}
-                                <span class="badge-user">Membre</span>
+                                <span class="badge-user">{{ 'admin.role_member'|trans }}</span>
                             {% endif %}
                         </td>
                         <td>{{ user.products|length }}</td>
@@ -66,19 +67,19 @@
                                     {% for i in 1..5 %}{% if i <= data.averageRating|round %}★{% else %}☆{% endif %}{% endfor %}
                                 </span>
                             {% else %}
-                                <span style="color:#9ca3af;">—</span>
+                                <span style="color:var(--text-4);">—</span>
                             {% endif %}
                         </td>
                         <td class="admin-actions-cell">
-                            <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="btn btn-secondary btn-sm">Voir</a>
+                            <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="btn btn-secondary btn-sm">{{ 'admin.btn_view'|trans }}</a>
                             {% if user != app.user %}
                                 <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}"
-                                      onsubmit="return confirm('Supprimer {{ user.surname }} {{ user.name }} et tous ses produits ?')">
+                                      onsubmit="return confirm('{{ 'admin.confirm_delete_user'|trans({'%name%': user.surname ~ ' ' ~ user.name}) }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('admin_user_delete_' ~ user.id) }}">
-                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                    <button type="submit" class="btn btn-danger btn-sm">{{ 'admin.btn_delete'|trans }}</button>
                                 </form>
                             {% else %}
-                                <span style="color:#9ca3af; font-size:.8rem;">(vous)</span>
+                                <span style="color:var(--text-4); font-size:.8rem;">{{ 'admin.you'|trans }}</span>
                             {% endif %}
                         </td>
                     </tr>

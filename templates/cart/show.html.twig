@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon panier - Boutique{% endblock %}
+{% block title %}{{ 'cart.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
@@ -8,34 +8,35 @@
         <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
             <span>{{ app.user.userIdentifier }}</span>
-            <a href="{{ path('app_home') }}" class="btn btn-secondary">Continuer mes achats</a>
-            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">{{ 'cart.continue_shopping'|trans }}</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
     <main class="home-main">
 
-    {# Flash messages #}
     {% for message in app.flashes('success') %}
         <div class="flash-success">{{ message }}</div>
     {% endfor %}
     {% for message in app.flashes('error') %}
         <div class="flash-error">{{ message }}</div>
     {% endfor %}
-        <h2>Mon panier</h2>
+
+        <h2>{{ 'cart.heading'|trans }}</h2>
 
         {% if cart is null or cart.cartItems is empty %}
-            <p class="empty-list">Votre panier est vide.</p>
-            <a href="{{ path('app_home') }}" class="btn btn-primary">Voir les articles</a>
+            <p class="empty-list">{{ 'cart.empty'|trans }}</p>
+            <a href="{{ path('app_home') }}" class="btn btn-primary">{{ 'cart.view_products'|trans }}</a>
         {% else %}
             <table class="product-table">
                 <thead>
                     <tr>
-                        <th>Article</th>
-                        <th>Catégorie</th>
-                        <th>Prix unitaire</th>
-                        <th>Quantité</th>
-                        <th>Sous-total</th>
+                        <th>{{ 'cart.col_item'|trans }}</th>
+                        <th>{{ 'cart.col_category'|trans }}</th>
+                        <th>{{ 'cart.col_unit_price'|trans }}</th>
+                        <th>{{ 'cart.col_quantity'|trans }}</th>
+                        <th>{{ 'cart.col_subtotal'|trans }}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -47,7 +48,7 @@
                                     {{ item.product.name }}
                                 </a>
                                 {% if item.quantity > item.product.stock %}
-                                    <span class="badge badge-stock-out" style="display:inline-block;margin-left:.4rem;">Stock insuffisant</span>
+                                    <span class="badge badge-stock-out" style="display:inline-block;margin-left:.4rem;">{{ 'cart.insufficient_stock'|trans }}</span>
                                 {% endif %}
                             </td>
                             <td>{{ item.product.category.name }}</td>
@@ -68,7 +69,7 @@
                             <td>
                                 <form method="post" action="{{ path('app_cart_remove_item', {id: item.id}) }}">
                                     <input type="hidden" name="_token" value="{{ csrf_token('cart_remove_' ~ item.id) }}">
-                                    <button type="submit" class="btn-remove" title="Retirer" onclick="return confirm('Retirer cet article du panier ?')">✕</button>
+                                    <button type="submit" class="btn-remove" title="{{ 'cart.remove_title'|trans }}" onclick="return confirm('{{ 'cart.remove_confirm'|trans }}')">✕</button>
                                 </form>
                             </td>
                         </tr>
@@ -76,7 +77,7 @@
                 </tbody>
                 <tfoot>
                     <tr class="cart-total-row">
-                        <td colspan="4" class="cart-total-label">Total</td>
+                        <td colspan="4" class="cart-total-label">{{ 'cart.total'|trans }}</td>
                         <td colspan="2" class="cart-total-value">{{ cart.total }} €</td>
                     </tr>
                 </tfoot>
@@ -86,8 +87,8 @@
                 <form method="post" action="{{ path('app_cart_checkout') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('cart_checkout') }}">
                     <button type="submit" class="btn btn-primary btn-checkout"
-                            onclick="return confirm('Confirmer la commande ?')">
-                        Valider la commande
+                            onclick="return confirm('{{ 'cart.confirm_order'|trans }}')">
+                        {{ 'cart.validate_order'|trans }}
                     </button>
                 </form>
             </div>

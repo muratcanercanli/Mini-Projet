@@ -33,6 +33,6 @@
         {{ form_label(form.stockMin) }}
         {{ form_widget(form.stockMin) }}
         {{ form_errors(form.stockMin) }}
-        <small class="form-hint">Optionnel — seuil en dessous duquel le stock apparaît en orange dans la liste.</small>
+        <small class="form-hint">{{ 'product.form.stock_min_hint'|trans }}</small>
     </div>
 </div>

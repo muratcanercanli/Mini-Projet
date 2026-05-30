@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Accueil - Boutique{% endblock %}
+{% block title %}{{ 'home.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
@@ -9,22 +9,23 @@
         <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
             {% if app.user %}
-                <span style="color:#6b7280; font-size:0.85rem;">
-                    Connecté en tant que <strong style="color:#111827;">{{ app.user.userIdentifier }}</strong>
+                <span style="color:var(--text-3); font-size:0.85rem;">
+                    {{ 'nav.connected_as'|trans }} <strong style="color:var(--text-1);">{{ app.user.userIdentifier }}</strong>
                     {% if is_granted('ROLE_ADMIN') %}
-                        <span class="badge-admin">Admin</span>
+                        <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                     {% endif %}
                 </span>
-                <a href="{{ path('app_profile') }}" class="btn btn-secondary">Mon profil</a>
-                <a href="{{ path('app_product_new') }}" class="btn btn-primary">+ Publier une annonce</a>
-                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Mon panier</a>
+                <a href="{{ path('app_profile') }}" class="btn btn-secondary">{{ 'nav.my_profile'|trans }}</a>
+                <a href="{{ path('app_product_new') }}" class="btn btn-primary">{{ 'nav.publish_listing'|trans }}</a>
+                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">{{ 'nav.my_cart'|trans }}</a>
                 {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Administration</a>
+                    <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">{{ 'nav.administration'|trans }}</a>
                 {% endif %}
-                <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
             {% else %}
-                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                <a href="{{ path('app_login') }}" class="btn btn-primary">{{ 'nav.login'|trans }}</a>
             {% endif %}
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
@@ -38,23 +39,22 @@
             <div class="flash-error">{{ message }}</div>
         {% endfor %}
 
-        {# Titre + filtres actifs + légende — zone sticky hors scroll #}
         <div class="home-content-header">
             {% set hasFilters = filters.name or filters.category or filters.priceMin or filters.priceMax or filters.stockMin or filters.stockMax %}
 
             <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.6rem; flex-wrap:wrap;">
-                <h2 style="margin:0; font-size:1.4rem; color:#111827;">Articles en vente</h2>
+                <h2 style="margin:0; font-size:1.4rem; color:var(--text-1);">{{ 'home.items_for_sale'|trans }}</h2>
                 {% if hasFilters %}
                     <span class="filter-active-info" style="margin-bottom:0;">
-                        <strong>{{ products|length }}</strong>&nbsp;résultat{% if products|length != 1 %}s{% endif %} trouvé{% if products|length != 1 %}s{% endif %}
-                        <a href="{{ path('app_home') }}" class="filter-reset-link">&#x2715; Effacer les filtres</a>
+                        <strong>{{ products|length }}</strong>&nbsp;{{ products|length != 1 ? 'home.results_plural'|trans : 'home.results_singular'|trans }}
+                        <a href="{{ path('app_home') }}" class="filter-reset-link">{{ 'home.clear_filters'|trans }}</a>
                     </span>
                 {% endif %}
             </div>
 
             <div class="stock-legend">
-                <span class="legend-item legend-low">Stock bas</span>
-                <span class="legend-item legend-out">Rupture de stock</span>
+                <span class="legend-item legend-low">{{ 'home.legend_low_stock'|trans }}</span>
+                <span class="legend-item legend-out">{{ 'home.legend_out_of_stock'|trans }}</span>
             </div>
         </div>
 
@@ -69,19 +69,19 @@
                     </colgroup>
                     <thead>
                         <tr>
-                            <th>Nom</th>
-                            <th>Catégorie</th>
-                            <th>Stock</th>
-                            <th>Prix</th>
-                            <th>Description</th>
+                            <th>{{ 'home.col_name'|trans }}</th>
+                            <th>{{ 'home.col_category'|trans }}</th>
+                            <th>{{ 'home.col_stock'|trans }}</th>
+                            <th>{{ 'home.col_price'|trans }}</th>
+                            <th>{{ 'home.col_description'|trans }}</th>
                         </tr>
                         <tr class="filter-row">
                             <th>
-                                <input type="text" name="name" value="{{ filters.name }}" placeholder="Rechercher…" class="filter-input">
+                                <input type="text" name="name" value="{{ filters.name }}" placeholder="{{ 'home.filter_search_placeholder'|trans }}" class="filter-input">
                             </th>
                             <th>
                                 <select name="category" class="filter-input">
-                                    <option value="">Toutes cat.</option>
+                                    <option value="">{{ 'home.filter_all_categories'|trans }}</option>
                                     {% for cat in categories %}
                                         <option value="{{ cat.id }}" {% if filters.category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
                                     {% endfor %}
@@ -101,8 +101,8 @@
                             </th>
                             <th>
                                 <div class="filter-actions">
-                                    <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-                                    <a href="{{ path('app_home') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
+                                    <button type="submit" class="btn btn-primary btn-sm">{{ 'home.filter_submit'|trans }}</button>
+                                    <a href="{{ path('app_home') }}" class="btn btn-secondary btn-sm">{{ 'home.filter_reset'|trans }}</a>
                                 </div>
                             </th>
                         </tr>
@@ -112,9 +112,9 @@
                             <tr>
                                 <td colspan="5" class="empty-list">
                                     {% if hasFilters %}
-                                        Aucun article ne correspond aux filtres sélectionnés.
+                                        {{ 'home.no_results_filtered'|trans }}
                                     {% else %}
-                                        Aucun article disponible pour le moment.
+                                        {{ 'home.no_results_empty'|trans }}
                                     {% endif %}
                                 </td>
                             </tr>

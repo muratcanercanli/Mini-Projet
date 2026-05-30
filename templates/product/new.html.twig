@@ -1,19 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Publier une annonce{% endblock %}
+{% block title %}{{ 'product.new.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
     <header class="home-header">
         <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
-            <a href="{{ path('app_home') }}" class="btn-secondary">← Retour à la liste</a>
+            <a href="{{ path('app_home') }}" class="btn-secondary">{{ 'product.new.back'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
     <div class="home-main">
     <div class="form-card">
-        <h2 class="form-card-title">Publier une annonce</h2>
+        <h2 class="form-card-title">{{ 'product.new.heading'|trans }}</h2>
 
         {% for message in app.flashes('error') %}
             <div class="flash-error">{{ message }}</div>
@@ -21,9 +22,9 @@
 
         {{ form_start(form, { attr: { novalidate: 'novalidate' } }) }}
             {% include 'product/_form.html.twig' %}
-            <button type="submit" class="btn-submit">Publier l'annonce</button>
+            <button type="submit" class="btn-submit">{{ 'product.new.submit'|trans }}</button>
         {{ form_end(form) }}
     </div>
-    </div>{# /home-main #}
+    </div>
 </div>
 {% endblock %}

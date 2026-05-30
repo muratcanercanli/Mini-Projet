@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ seller.surname }} {{ seller.name }} — Vendeur{% endblock %}
+{% block title %}{{ seller.surname }} {{ seller.name }} — {{ 'product.meta_seller'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
@@ -11,15 +11,16 @@
                 <span>
                     {{ app.user.userIdentifier }}
                     {% if is_granted('ROLE_ADMIN') %}
-                        <span class="badge-admin">Admin</span>
+                        <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                     {% endif %}
                 </span>
-                <a href="{{ path('app_profile') }}" class="btn btn-secondary">Mon profil</a>
-                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Mon panier</a>
-                <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+                <a href="{{ path('app_profile') }}" class="btn btn-secondary">{{ 'nav.my_profile'|trans }}</a>
+                <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">{{ 'nav.my_cart'|trans }}</a>
+                <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
             {% else %}
-                <a href="{{ path('app_login') }}" class="btn btn-primary">Se connecter</a>
+                <a href="{{ path('app_login') }}" class="btn btn-primary">{{ 'nav.login'|trans }}</a>
             {% endif %}
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
@@ -32,7 +33,7 @@
         <div class="flash-error">{{ message }}</div>
     {% endfor %}
 
-    <a href="{{ path('app_home') }}" class="btn-back">← Retour à la liste</a>
+    <a href="{{ path('app_home') }}" class="btn-back">{{ 'seller.back_to_list'|trans }}</a>
 
     {# ── En-tête vendeur ── #}
     <div class="profile-card">
@@ -41,7 +42,7 @@
                 <h2 class="profile-section-title" style="margin-bottom:.25rem;">
                     {{ seller.surname }} {{ seller.name }}
                 </h2>
-                <p style="color:#6b7280;font-size:.9rem;margin:0;">{{ seller.email }}</p>
+                <p style="color:var(--text-3);font-size:.9rem;margin:0;">{{ seller.email }}</p>
             </div>
             <div class="seller-rating-block">
                 {% if averageRating is not null %}
@@ -50,9 +51,9 @@
                             {% if i <= averageRating|round %}★{% else %}☆{% endif %}
                         {% endfor %}
                     </div>
-                    <div class="seller-avg-num">{{ averageRating|number_format(1, ',') }} / 5 ({{ reviews|length }} avis)</div>
+                    <div class="seller-avg-num">{{ averageRating|number_format(1, ',') }} / 5 ({{ reviews|length }} {{ 'seller.review_label'|trans }})</div>
                 {% else %}
-                    <div class="seller-avg-num" style="color:#9ca3af;">Aucun avis</div>
+                    <div class="seller-avg-num" style="color:var(--text-4);">{{ 'seller.no_reviews'|trans }}</div>
                 {% endif %}
             </div>
         </div>
@@ -60,9 +61,9 @@
 
     {# ── Annonces du vendeur ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Annonces de ce vendeur ({{ products|length }})</h2>
+        <h2 class="profile-section-title">{{ 'seller.listings_title_prefix'|trans }} ({{ products|length }})</h2>
         {% if products is empty %}
-            <p class="profile-empty">Ce vendeur n'a aucune annonce active.</p>
+            <p class="profile-empty">{{ 'seller.no_listings'|trans }}</p>
         {% else %}
             <ul class="profile-list">
                 {% for product in products %}
@@ -75,11 +76,11 @@
         {% endif %}
     </div>
 
-    {# ── Formulaire d'avis (si connecté et pas le vendeur lui-même) ── #}
+    {# ── Formulaire d'avis ── #}
     {% if app.user and app.user != seller %}
         <div class="profile-card">
             <h2 class="profile-section-title">
-                {% if existingReview %}Modifier mon avis{% else %}Laisser un avis{% endif %}
+                {% if existingReview %}{{ 'seller.edit_review'|trans }}{% else %}{{ 'seller.write_review'|trans }}{% endif %}
             </h2>
             <form method="post" action="{{ path('app_review_add', {id: seller.id}) }}" class="review-form">
                 <input type="hidden" name="_token" value="{{ csrf_token('review_add_' ~ seller.id) }}">
@@ -87,7 +88,7 @@
                 <input type="hidden" name="seller_id" value="{{ seller.id }}">
 
                 <div class="form-group">
-                    <label for="rating">Note (1 à 5)</label>
+                    <label for="rating">{{ 'seller.rating_label'|trans }}</label>
                     <div class="star-rating">
                         {% for i in 5..1 %}
                             <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}"
@@ -99,13 +100,13 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="comment">Commentaire</label>
+                    <label for="comment">{{ 'seller.comment_label'|trans }}</label>
                     <textarea id="comment" name="comment" rows="4" required
-                              placeholder="Décrivez votre expérience avec ce vendeur…">{{ existingReview ? existingReview.comment : '' }}</textarea>
+                              placeholder="{{ 'seller.comment_placeholder'|trans }}">{{ existingReview ? existingReview.comment : '' }}</textarea>
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    {% if existingReview %}Mettre à jour{% else %}Publier l'avis{% endif %}
+                    {% if existingReview %}{{ 'seller.update_review'|trans }}{% else %}{{ 'seller.submit_review'|trans }}{% endif %}
                 </button>
             </form>
         </div>
@@ -113,10 +114,10 @@
 
     {# ── Liste des avis ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Avis reçus ({{ reviews|length }})</h2>
+        <h2 class="profile-section-title">{{ 'seller.reviews_received_prefix'|trans }} ({{ reviews|length }})</h2>
 
         {% if reviews is empty %}
-            <p class="profile-empty">Ce vendeur n'a reçu aucun avis pour le moment.</p>
+            <p class="profile-empty">{{ 'seller.no_reviews_received'|trans }}</p>
         {% else %}
             <div class="reviews-list">
                 {% for review in reviews %}
@@ -137,13 +138,13 @@
                         <div class="review-actions">
                             {% if app.user and (review.author == app.user or is_granted('ROLE_ADMIN')) %}
                                 <form method="post" action="{{ path('app_review_delete', {id: review.id}) }}"
-                                      onsubmit="return confirm('Supprimer cet avis ?')">
+                                      onsubmit="return confirm('{{ 'seller.confirm_delete_review'|trans }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('review_delete_' ~ review.id) }}">
                                     <button type="submit" class="btn-review-delete">
                                         {% if is_granted('ROLE_ADMIN') and review.author != app.user %}
-                                            Supprimer (admin)
+                                            {{ 'seller.delete_review_admin'|trans }}
                                         {% else %}
-                                            Supprimer mon avis
+                                            {{ 'seller.delete_own_review'|trans }}
                                         {% endif %}
                                     </button>
                                 </form>
@@ -154,6 +155,6 @@
             </div>
         {% endif %}
     </div>
-    </div>{# /home-main #}
+    </div>
 </div>
 {% endblock %}

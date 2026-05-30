@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Mon profil{% endblock %}
+{% block title %}{{ 'profile.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="home-container">
@@ -10,15 +10,16 @@
             <span>
                 {{ app.user.userIdentifier }}
                 {% if is_granted('ROLE_ADMIN') %}
-                    <span class="badge-admin">Admin</span>
+                    <span class="badge-admin">{{ 'admin.role_admin'|trans }}</span>
                 {% endif %}
             </span>
-            <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
-            <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Mon panier</a>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">{{ 'nav.home'|trans }}</a>
+            <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">{{ 'nav.my_cart'|trans }}</a>
             {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Administration</a>
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">{{ 'nav.administration'|trans }}</a>
             {% endif %}
-            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">{{ 'nav.logout'|trans }}</a>
+            {{ include('_controls.html.twig') }}
         </nav>
     </header>
 
@@ -33,19 +34,19 @@
 
     {# ── Informations personnelles ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Mon profil</h2>
+        <h2 class="profile-section-title">{{ 'profile.heading'|trans }}</h2>
         <div class="profile-info-grid">
-            <div><span class="profile-label">Nom</span><span class="profile-value">{{ user.surname }} {{ user.name }}</span></div>
-            <div><span class="profile-label">Email</span><span class="profile-value">{{ user.email }}</span></div>
-            <div><span class="profile-label">Téléphone</span><span class="profile-value">{{ user.phoneNumber }}</span></div>
-            <div><span class="profile-label">Adresse</span><span class="profile-value">{{ user.address }}</span></div>
+            <div><span class="profile-label">{{ 'profile.field_name'|trans }}</span><span class="profile-value">{{ user.surname }} {{ user.name }}</span></div>
+            <div><span class="profile-label">{{ 'profile.field_email'|trans }}</span><span class="profile-value">{{ user.email }}</span></div>
+            <div><span class="profile-label">{{ 'profile.field_phone'|trans }}</span><span class="profile-value">{{ user.phoneNumber }}</span></div>
+            <div><span class="profile-label">{{ 'profile.field_address'|trans }}</span><span class="profile-value">{{ user.address }}</span></div>
         </div>
     </div>
 
     {# ── Note moyenne reçue ── #}
     <div class="profile-card">
         <h2 class="profile-section-title">
-            Ma réputation de vendeur
+            {{ 'profile.reputation'|trans }}
             {% if averageRating is not null %}
                 <span class="rating-badge">
                     {{ averageRating|number_format(1, ',') }} / 5
@@ -54,12 +55,12 @@
                     </span>
                 </span>
             {% else %}
-                <span class="rating-badge rating-none">Aucune note reçue</span>
+                <span class="rating-badge rating-none">{{ 'profile.no_rating'|trans }}</span>
             {% endif %}
         </h2>
 
         {% if receivedReviews is empty %}
-            <p class="profile-empty">Vous n'avez encore reçu aucun avis.</p>
+            <p class="profile-empty">{{ 'profile.no_reviews_received'|trans }}</p>
         {% else %}
             <div class="reviews-list">
                 {% for review in receivedReviews %}
@@ -84,9 +85,9 @@
                         <div class="review-actions">
                             {% if is_granted('ROLE_ADMIN') %}
                                 <form method="post" action="{{ path('app_review_delete', {id: review.id}) }}"
-                                      onsubmit="return confirm('Supprimer cet avis ?')">
+                                      onsubmit="return confirm('{{ 'seller.confirm_delete_review'|trans }}')">
                                     <input type="hidden" name="_token" value="{{ csrf_token('review_delete_' ~ review.id) }}">
-                                    <button type="submit" class="btn-review-delete">Supprimer (admin)</button>
+                                    <button type="submit" class="btn-review-delete">{{ 'profile.delete_review_admin'|trans }}</button>
                                 </form>
                             {% endif %}
                         </div>
@@ -98,10 +99,10 @@
 
     {# ── Avis donnés ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Vendeurs que j'ai évalués</h2>
+        <h2 class="profile-section-title">{{ 'profile.reviews_given'|trans }}</h2>
 
         {% if givenReviews is empty %}
-            <p class="profile-empty">Vous n'avez encore évalué aucun vendeur.</p>
+            <p class="profile-empty">{{ 'profile.no_reviews_given'|trans }}</p>
         {% else %}
             <div class="reviews-list">
                 {% for review in givenReviews %}
@@ -125,9 +126,9 @@
                         <p class="review-comment">{{ review.comment }}</p>
                         <div class="review-actions">
                             <form method="post" action="{{ path('app_review_delete', {id: review.id}) }}"
-                                  onsubmit="return confirm('Supprimer votre avis ?')">
+                                  onsubmit="return confirm('{{ 'profile.confirm_delete_own_review'|trans }}')">
                                 <input type="hidden" name="_token" value="{{ csrf_token('review_delete_' ~ review.id) }}">
-                                <button type="submit" class="btn-review-delete">Supprimer mon avis</button>
+                                <button type="submit" class="btn-review-delete">{{ 'profile.delete_own_review'|trans }}</button>
                             </form>
                         </div>
                     </div>
@@ -138,10 +139,10 @@
 
     {# ── Articles favoris ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Mes articles favoris</h2>
+        <h2 class="profile-section-title">{{ 'profile.favorites'|trans }}</h2>
 
         {% if user.listFavorites is empty %}
-            <p class="profile-empty">Vous n'avez aucun article en favori.</p>
+            <p class="profile-empty">{{ 'profile.no_favorites'|trans }}</p>
         {% else %}
             <ul class="profile-list">
                 {% for product in user.listFavorites %}
@@ -153,7 +154,7 @@
                         <form method="post" action="{{ path('app_favorite_toggle', {id: product.id}) }}" style="display:inline;">
                             <input type="hidden" name="_token" value="{{ csrf_token('favorite_toggle_' ~ product.id) }}">
                             <input type="hidden" name="redirect" value="profile">
-                            <button type="submit" class="btn-favorite-remove" title="Retirer des favoris">♥ Retirer</button>
+                            <button type="submit" class="btn-favorite-remove" title="{{ 'product.remove_favorite'|trans }}">{{ 'profile.remove_favorite_btn'|trans }}</button>
                         </form>
                     </li>
                 {% endfor %}
@@ -163,19 +164,19 @@
 
     {# ── Commandes passées ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Mes commandes passées</h2>
+        <h2 class="profile-section-title">{{ 'profile.orders'|trans }}</h2>
 
         {% set pastOrders = user.carts|filter(c => c.purchasedAt is not null) %}
 
         {% if pastOrders is empty %}
-            <p class="profile-empty">Vous n'avez passé aucune commande.</p>
+            <p class="profile-empty">{{ 'profile.no_orders'|trans }}</p>
         {% else %}
             {% for cart in pastOrders %}
                 <div class="order-block">
                     <div class="order-header">
-                        <span class="order-date">Commande du {{ cart.purchasedAt|date('d/m/Y à H:i') }}</span>
+                        <span class="order-date">{{ 'profile.order_date'|trans({'%date%': cart.purchasedAt|date('d/m/Y à H:i')}) }}</span>
                         <span class="order-total">
-                            Total :
+                            {{ 'profile.order_total'|trans }}
                             {% set total = 0 %}
                             {% for item in cart.cartItems %}{% set total = total + item.quantity * item.product.price %}{% endfor %}
                             {{ total }} €
@@ -193,21 +194,21 @@
 
     {# ── Mes annonces ── #}
     <div class="profile-card">
-        <h2 class="profile-section-title">Mes annonces publiées</h2>
+        <h2 class="profile-section-title">{{ 'profile.my_listings'|trans }}</h2>
 
         {% if user.products is empty %}
-            <p class="profile-empty">Vous n'avez publié aucune annonce.</p>
+            <p class="profile-empty">{{ 'profile.no_listings'|trans }}</p>
         {% else %}
             <ul class="profile-list">
                 {% for product in user.products %}
                     <li>
                         <a href="{{ path('app_product_show', {id: product.id}) }}">{{ product.name }}</a>
-                        <span class="profile-list-meta">{{ product.price }} € — stock : {{ product.stock }}</span>
+                        <span class="profile-list-meta">{{ product.price }} € — {{ 'profile.stock_label'|trans }} {{ product.stock }}</span>
                     </li>
                 {% endfor %}
             </ul>
         {% endif %}
     </div>
-    </div>{# /home-main #}
+    </div>
 </div>
 {% endblock %}

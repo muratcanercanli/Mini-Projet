@@ -1,12 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Connexion{% endblock %}
+{% block title %}{{ 'login.page_title'|trans }}{% endblock %}
 
 {% block body %}
 <div class="login-wrapper">
     <div class="login-card">
         {{ include('_brand.html.twig', {brand_class: 'card-brand'}) }}
-        <h1>Connexion</h1>
+
+        <div style="display:flex; justify-content:flex-end; gap:.5rem; margin-bottom:1rem;">
+            {{ include('_controls.html.twig') }}
+        </div>
+
+        <h1>{{ 'login.heading'|trans }}</h1>
 
         {% if error %}
             <div class="alert alert-error">
@@ -16,14 +21,14 @@
 
         {% if app.user %}
             <div class="alert alert-info">
-                Vous êtes connecté en tant que {{ app.user.userIdentifier }}.
-                <a href="{{ path('app_logout') }}">Se déconnecter</a>
+                {{ 'login.already_connected_prefix'|trans }} {{ app.user.userIdentifier }}.
+                <a href="{{ path('app_logout') }}">{{ 'login.logout_link'|trans }}</a>
             </div>
         {% endif %}
 
         <form action="{{ path('app_login') }}" method="post">
             <div class="form-group">
-                <label for="inputEmail">Adresse e-mail</label>
+                <label for="inputEmail">{{ 'login.email_label'|trans }}</label>
                 <input
                     type="email"
                     id="inputEmail"
@@ -37,7 +42,7 @@
             </div>
 
             <div class="form-group">
-                <label for="inputPassword">Mot de passe</label>
+                <label for="inputPassword">{{ 'login.password_label'|trans }}</label>
                 <input
                     type="password"
                     id="inputPassword"
@@ -50,150 +55,17 @@
 
             <div class="form-check">
                 <input type="checkbox" id="remember_me" name="_remember_me">
-                <label for="remember_me">Se souvenir de moi</label>
+                <label for="remember_me">{{ 'login.remember_me'|trans }}</label>
             </div>
 
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-            <button type="submit" class="btn-submit">Se connecter</button>
+            <button type="submit" class="btn-submit">{{ 'login.submit'|trans }}</button>
         </form>
 
         <p class="register-link">
-            Pas encore de compte ? <a href="{{ path('app_register') }}">Créer un compte</a>
+            {{ 'login.no_account'|trans }} <a href="{{ path('app_register') }}">{{ 'login.create_account'|trans }}</a>
         </p>
     </div>
 </div>
-
-<style>
-    body {
-        margin: 0;
-        font-family: sans-serif;
-        background: #f0f2f5;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-    }
-
-    .login-wrapper {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 100vh;
-        padding: 1rem;
-    }
-
-    .login-card {
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 2px 16px rgba(0,0,0,.10);
-        padding: 2.5rem 2rem;
-        width: 100%;
-        max-width: 400px;
-    }
-
-    h1 {
-        margin: 0 0 1.5rem;
-        font-size: 1.6rem;
-        text-align: center;
-        color: #1a1a2e;
-    }
-
-    .alert {
-        border-radius: 4px;
-        padding: .75rem 1rem;
-        margin-bottom: 1rem;
-        font-size: .9rem;
-    }
-
-    .alert-error {
-        background: #fde8e8;
-        color: #c0392b;
-        border: 1px solid #f5c6c6;
-    }
-
-    .alert-info {
-        background: #e8f4fd;
-        color: #2980b9;
-        border: 1px solid #bee3f8;
-    }
-
-    .form-group {
-        margin-bottom: 1.1rem;
-    }
-
-    label {
-        display: block;
-        font-size: .875rem;
-        font-weight: 600;
-        color: #374151;
-        margin-bottom: .35rem;
-    }
-
-    input[type="email"],
-    input[type="password"] {
-        width: 100%;
-        padding: .6rem .75rem;
-        border: 1px solid #d1d5db;
-        border-radius: 5px;
-        font-size: 1rem;
-        box-sizing: border-box;
-        transition: border-color .2s;
-    }
-
-    input[type="email"]:focus,
-    input[type="password"]:focus {
-        outline: none;
-        border-color: #6366f1;
-        box-shadow: 0 0 0 3px rgba(99,102,241,.15);
-    }
-
-    .form-check {
-        display: flex;
-        align-items: center;
-        gap: .5rem;
-        margin-bottom: 1.25rem;
-        font-size: .875rem;
-        color: #6b7280;
-    }
-
-    .form-check input {
-        width: 16px;
-        height: 16px;
-    }
-
-    .btn-submit {
-        width: 100%;
-        padding: .7rem;
-        background: #6366f1;
-        color: #fff;
-        border: none;
-        border-radius: 5px;
-        font-size: 1rem;
-        font-weight: 600;
-        cursor: pointer;
-        transition: background .2s;
-    }
-
-    .btn-submit:hover {
-        background: #4f46e5;
-    }
-
-    .register-link {
-        text-align: center;
-        margin-top: 1.25rem;
-        font-size: .875rem;
-        color: #6b7280;
-    }
-
-    .register-link a {
-        color: #6366f1;
-        text-decoration: none;
-        font-weight: 600;
-    }
-
-    .register-link a:hover {
-        text-decoration: underline;
-    }
-</style>
 {% endblock %}
