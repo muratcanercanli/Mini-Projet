@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Administration — Utilisateurs{% endblock %}
+
+{% block body %}
+<div class="home-container">
+    <header class="home-header">
+        <h1 class="navbar-admin-title">{{ include('_brand.html.twig') }}<span class="navbar-section">› Administration</span></h1>
+        <nav class="home-nav">
+            <span class="badge-admin">Admin</span>
+            <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
+            <a href="{{ path('app_profile') }}" class="btn btn-secondary">Mon profil</a>
+            <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
+        </nav>
+    </header>
+
+    <div class="home-main">
+
+        {% for message in app.flashes('success') %}
+            <div class="flash-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="flash-error">{{ message }}</div>
+        {% endfor %}
+
+        <div class="admin-section-header">
+            <h2>Gestion des utilisateurs</h2>
+            <span class="admin-count">{{ usersData|length }} utilisateur{% if usersData|length != 1 %}s{% endif %}</span>
+        </div>
+
+        <table class="product-table admin-table">
+            <thead>
+                <tr>
+                    <th>Utilisateur</th>
+                    <th>Email</th>
+                    <th>Rôle</th>
+                    <th>Produits</th>
+                    <th>Avis reçus</th>
+                    <th>Note moy.</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for data in usersData %}
+                    {% set user = data.user %}
+                    <tr>
+                        <td>
+                            <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="product-name-link">
+                                {{ user.surname }} {{ user.name }}
+                            </a>
+                        </td>
+                        <td style="color:#6b7280; font-size:.9rem;">{{ user.email }}</td>
+                        <td>
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="badge-admin">Admin</span>
+                            {% else %}
+                                <span class="badge-user">Membre</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.products|length }}</td>
+                        <td>{{ user.receivedReviews|length }}</td>
+                        <td>
+                            {% if data.averageRating is not null %}
+                                <span class="admin-rating">
+                                    {{ data.averageRating|number_format(1, ',') }}/5
+                                    {% for i in 1..5 %}{% if i <= data.averageRating|round %}★{% else %}☆{% endif %}{% endfor %}
+                                </span>
+                            {% else %}
+                                <span style="color:#9ca3af;">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="admin-actions-cell">
+                            <a href="{{ path('app_admin_user_detail', {id: user.id}) }}" class="btn btn-secondary btn-sm">Voir</a>
+                            {% if user != app.user %}
+                                <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}"
+                                      onsubmit="return confirm('Supprimer {{ user.surname }} {{ user.name }} et tous ses produits ?')">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('admin_user_delete_' ~ user.id) }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                                </form>
+                            {% else %}
+                                <span style="color:#9ca3af; font-size:.8rem;">(vous)</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+{% endblock %}

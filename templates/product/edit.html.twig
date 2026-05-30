@@ -5,7 +5,7 @@
 {% block body %}
 <div class="home-container">
     <header class="home-header">
-        <h1>Boutique en ligne</h1>
+        <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
             <a href="{{ path('app_product_show', {id: product.id}) }}" class="btn-secondary">← Retour à l'annonce</a>
         </nav>

@@ -5,7 +5,7 @@
 {% block body %}
 <div class="home-container">
     <header class="home-header">
-        <h1>Boutique en ligne</h1>
+        <h1>{{ include('_brand.html.twig') }}</h1>
         <nav class="home-nav">
             <span>
                 {{ app.user.userIdentifier }}
@@ -15,6 +15,9 @@
             </span>
             <a href="{{ path('app_home') }}" class="btn btn-secondary">Accueil</a>
             <a href="{{ path('app_cart_show') }}" class="btn btn-secondary">Mon panier</a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-secondary">Administration</a>
+            {% endif %}
             <a href="{{ path('app_logout') }}" class="btn btn-danger">Se déconnecter</a>
         </nav>
     </header>

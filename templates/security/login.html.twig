@@ -5,6 +5,7 @@
 {% block body %}
 <div class="login-wrapper">
     <div class="login-card">
+        {{ include('_brand.html.twig', {brand_class: 'card-brand'}) }}
         <h1>Connexion</h1>
 
         {% if error %}

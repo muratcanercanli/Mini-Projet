@@ -5,6 +5,7 @@
 {% block body %}
 <div class="register-wrapper">
     <div class="register-card">
+        {{ include('_brand.html.twig', {brand_class: 'card-brand'}) }}
         <h1>Créer un compte</h1>
 
         {% for message in app.flashes('success') %}

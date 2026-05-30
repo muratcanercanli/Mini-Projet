@@ -171,8 +171,10 @@ body {
 .product-table tbody tr               { cursor: pointer; }
 .product-table tbody tr:hover         { filter: brightness(.96); }
 
-.product-table tr.stock-low { background-color: #fed7aa; }
-.product-table tr.stock-out { background-color: #fecaca; }
+.product-table tr.stock-low td { color: #fb923c; font-weight: 600; }
+.product-table tr.stock-out td { color: #f87171; font-weight: 600; }
+.product-table tr.stock-low td a.product-name-link { color: #fb923c; }
+.product-table tr.stock-out td a.product-name-link { color: #f87171; }
 
 .product-name-link {
     color: #111827;
@@ -846,3 +848,165 @@ body {
     background: #ef4444;
     color: #fff;
 }
+
+/* ══════════════════════════════════════
+   Administration
+══════════════════════════════════════ */
+
+.badge-user {
+    background: #e5e7eb;
+    color: #374151;
+    padding: .15rem .5rem;
+    border-radius: 4px;
+    font-size: .75rem;
+    margin-left: .4rem;
+    vertical-align: middle;
+}
+
+.admin-section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-section-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    color: #111827;
+}
+
+.admin-count {
+    background: #e0e7ff;
+    color: #3730a3;
+    padding: .15rem .6rem;
+    border-radius: 10px;
+    font-size: .8rem;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
+.admin-table {
+    margin-bottom: 1.5rem;
+}
+
+.admin-actions-cell {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+}
+
+.admin-actions-cell form {
+    margin: 0;
+}
+
+.admin-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.25rem;
+}
+
+.admin-card-header .profile-section-title {
+    margin: 0;
+}
+
+.admin-edit-form .form-control {
+    width: 100%;
+    padding: .5rem .75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 5px;
+    font-size: .9rem;
+    font-family: inherit;
+    box-sizing: border-box;
+    background: #fff;
+    transition: border-color .2s;
+}
+
+.admin-edit-form .form-control:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, .15);
+}
+
+.admin-edit-form label {
+    font-size: .85rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: .25rem;
+    display: block;
+}
+
+.admin-checkbox-label {
+    display: flex !important;
+    align-items: center;
+    gap: .5rem;
+    cursor: pointer;
+    font-size: .9rem !important;
+    padding-top: .4rem;
+}
+
+.admin-checkbox-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.admin-rating {
+    color: #d97706;
+    font-weight: 600;
+    font-size: .85rem;
+}
+
+/* ══════════════════════════════════════
+   Logo / Brand
+══════════════════════════════════════ */
+.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    color: inherit;
+    text-decoration: none;
+    font-weight: 700;
+}
+
+.navbar-brand:hover { color: #6366f1; }
+
+.navbar-brand svg {
+    flex-shrink: 0;
+    color: #6366f1;
+}
+
+/* Breadcrumb admin : AutoBazar › Administration */
+.navbar-admin-title {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.5rem;
+    margin: 0;
+    color: #111827;
+    white-space: nowrap;
+}
+
+.navbar-section {
+    font-size: .9rem;
+    color: #9ca3af;
+    font-weight: 500;
+}
+
+/* Logo centré dans les cartes login / register */
+.card-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .45rem;
+    color: #111827;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: .75rem;
+}
+
+.card-brand svg { color: #6366f1; }
+.card-brand:hover { color: #6366f1; }
