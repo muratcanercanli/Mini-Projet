@@ -4,12 +4,13 @@
 
 {% block body %}
 <div class="home-container">
+
     <header class="home-header">
         <h1>Boutique en ligne</h1>
         <nav class="home-nav">
             {% if app.user %}
-                <span>
-                    Connecté en tant que <strong>{{ app.user.userIdentifier }}</strong>
+                <span style="color:#6b7280; font-size:0.85rem;">
+                    Connecté en tant que <strong style="color:#111827;">{{ app.user.userIdentifier }}</strong>
                     {% if is_granted('ROLE_ADMIN') %}
                         <span class="badge-admin">Admin</span>
                     {% endif %}
@@ -24,111 +25,125 @@
         </nav>
     </header>
 
-    {# Flash messages #}
-    {% for message in app.flashes('success') %}
-        <div class="flash-success">{{ message }}</div>
-    {% endfor %}
-    {% for message in app.flashes('error') %}
-        <div class="flash-error">{{ message }}</div>
-    {% endfor %}
+    <main class="home-main">
 
-    <main>
-        <h2>Articles en vente</h2>
+        {# Flash messages #}
+        {% for message in app.flashes('success') %}
+            <div class="flash-success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="flash-error">{{ message }}</div>
+        {% endfor %}
 
-        {% set hasFilters = filters.name or filters.category or filters.priceMin or filters.priceMax or filters.stockMin or filters.stockMax %}
+        {# Titre + filtres actifs + légende — zone sticky hors scroll #}
+        <div class="home-content-header">
+            {% set hasFilters = filters.name or filters.category or filters.priceMin or filters.priceMax or filters.stockMin or filters.stockMax %}
 
-        {% if hasFilters %}
-            <div class="filter-active-info">
-                <span>Filtres actifs &mdash; <strong>{{ products|length }}</strong> résultat{% if products|length != 1 %}s{% endif %} trouvé{% if products|length != 1 %}s{% endif %}</span>
-                <a href="{{ path('app_home') }}" class="filter-reset-link">&#x2715; Effacer les filtres</a>
+            <div style="display:flex; align-items:baseline; gap:1rem; margin-bottom:0.6rem; flex-wrap:wrap;">
+                <h2 style="margin:0; font-size:1.4rem; color:#111827;">Articles en vente</h2>
+                {% if hasFilters %}
+                    <span class="filter-active-info" style="margin-bottom:0;">
+                        <strong>{{ products|length }}</strong>&nbsp;résultat{% if products|length != 1 %}s{% endif %} trouvé{% if products|length != 1 %}s{% endif %}
+                        <a href="{{ path('app_home') }}" class="filter-reset-link">&#x2715; Effacer les filtres</a>
+                    </span>
+                {% endif %}
             </div>
-        {% endif %}
 
-        <div class="stock-legend">
-            <span class="legend-item legend-low">Stock bas</span>
-            <span class="legend-item legend-out">Rupture de stock</span>
+            <div class="stock-legend">
+                <span class="legend-item legend-low">Stock bas</span>
+                <span class="legend-item legend-out">Rupture de stock</span>
+            </div>
         </div>
 
         <form method="get" action="{{ path('app_home') }}" id="filter-form">
-            <table class="product-table">
-                <thead>
-                    <tr>
-                        <th>Nom</th>
-                        <th>Catégorie</th>
-                        <th>Stock</th>
-                        <th>Prix</th>
-                        <th>Description</th>
-                    </tr>
-                    <tr class="filter-row">
-                        <th>
-                            <input type="text" name="name" value="{{ filters.name }}" placeholder="Rechercher…" class="filter-input">
-                        </th>
-                        <th>
-                            <select name="category" class="filter-input">
-                                <option value="">Toutes catégories</option>
-                                {% for cat in categories %}
-                                    <option value="{{ cat.id }}" {% if filters.category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
-                                {% endfor %}
-                            </select>
-                        </th>
-                        <th>
-                            <div class="filter-range">
-                                <input type="number" name="stockMin" value="{{ filters.stockMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
-                                <input type="number" name="stockMax" value="{{ filters.stockMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
-                            </div>
-                        </th>
-                        <th>
-                            <div class="filter-range">
-                                <input type="number" name="priceMin" value="{{ filters.priceMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
-                                <input type="number" name="priceMax" value="{{ filters.priceMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
-                            </div>
-                        </th>
-                        <th>
-                            <div class="filter-actions">
-                                <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
-                                <a href="{{ path('app_home') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
-                            </div>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if products is empty %}
+                <table class="product-table">
+                    <colgroup>
+                        <col class="col-name">
+                        <col class="col-category">
+                        <col class="col-stock">
+                        <col class="col-price">
+                        <col class="col-description">
+                    </colgroup>
+                    <thead>
                         <tr>
-                            <td colspan="5" class="empty-list">
-                                {% if hasFilters %}
-                                    Aucun article ne correspond aux filtres sélectionnés.
-                                {% else %}
-                                    Aucun article disponible pour le moment.
-                                {% endif %}
-                            </td>
+                            <th>Nom</th>
+                            <th>Catégorie</th>
+                            <th>Stock</th>
+                            <th>Prix</th>
+                            <th>Description</th>
                         </tr>
-                    {% else %}
-                        {% for product in products %}
-                            {% if product.stock == 0 %}
-                                {% set rowClass = 'stock-out' %}
-                            {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
-                                {% set rowClass = 'stock-low' %}
-                            {% else %}
-                                {% set rowClass = '' %}
-                            {% endif %}
-                            <tr class="{{ rowClass }}" onclick="window.location='{{ path('app_product_show', {id: product.id}) }}'">
-                                <td>
-                                    <a class="product-name-link" href="{{ path('app_product_show', {id: product.id}) }}">
-                                        {{ product.name }}
-                                    </a>
-                                </td>
-                                <td>{{ product.category.name }}</td>
-                                <td>{{ product.stock }}</td>
-                                <td>{{ product.price }} €</td>
-                                <td>
-                                    {{ product.description|slice(0, 100) }}{% if product.description|length > 100 %}…{% endif %}
+                        <tr class="filter-row">
+                            <th>
+                                <input type="text" name="name" value="{{ filters.name }}" placeholder="Rechercher…" class="filter-input">
+                            </th>
+                            <th>
+                                <select name="category" class="filter-input">
+                                    <option value="">Toutes cat.</option>
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if filters.category == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input type="number" name="stockMin" value="{{ filters.stockMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
+                                    <input type="number" name="stockMax" value="{{ filters.stockMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-range">
+                                    <input type="number" name="priceMin" value="{{ filters.priceMin }}" placeholder="Min" class="filter-input filter-input-half" min="0">
+                                    <input type="number" name="priceMax" value="{{ filters.priceMax }}" placeholder="Max" class="filter-input filter-input-half" min="0">
+                                </div>
+                            </th>
+                            <th>
+                                <div class="filter-actions">
+                                    <button type="submit" class="btn btn-primary btn-sm">Filtrer</button>
+                                    <a href="{{ path('app_home') }}" class="btn btn-secondary btn-sm">Réinitialiser</a>
+                                </div>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if products is empty %}
+                            <tr>
+                                <td colspan="5" class="empty-list">
+                                    {% if hasFilters %}
+                                        Aucun article ne correspond aux filtres sélectionnés.
+                                    {% else %}
+                                        Aucun article disponible pour le moment.
+                                    {% endif %}
                                 </td>
                             </tr>
-                        {% endfor %}
-                    {% endif %}
-                </tbody>
-            </table>
+                        {% else %}
+                            {% for product in products %}
+                                {% if product.stock == 0 %}
+                                    {% set rowClass = 'stock-out' %}
+                                {% elseif product.stockMin is not null and product.stock <= product.stockMin %}
+                                    {% set rowClass = 'stock-low' %}
+                                {% else %}
+                                    {% set rowClass = '' %}
+                                {% endif %}
+                                <tr class="{{ rowClass }}" onclick="window.location='{{ path('app_product_show', {id: product.id}) }}'">
+                                    <td>
+                                        <a class="product-name-link" href="{{ path('app_product_show', {id: product.id}) }}">
+                                            {{ product.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ product.category.name }}</td>
+                                    <td>{{ product.stock }}</td>
+                                    <td>{{ product.price }} €</td>
+                                    <td>
+                                        {{ product.description|slice(0, 200) }}{% if product.description|length > 200 %}…{% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
         </form>
+
     </main>
+
 </div>
 {% endblock %}
